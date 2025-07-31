@@ -170,6 +170,9 @@ def ciz_grafik_duzenli(alanlar, yapan_adi):
     plt.close()
     return f"grafik/{dosya_adi}"
 
+import os
+import requests
+
 def yapay_zeka_yorumla(yapan, test_edilen, alanlar):
     prompt = f"""
 Johari Test Sonucu:
@@ -181,10 +184,12 @@ Kör Alan: {alanlar['kor']} puan
 Gizli Alan: {alanlar['gizli']} puan
 Bilinmeyen Alan: {alanlar['bilinmeyen']} puan
 
-Yukarıdaki Johari Penceresi sonuçlarına göre, test edilen kişi hakkında psikolojik bir analiz yapmanı istiyorum.Profesyonel bir Johari analizi yapmalısın.Oranların anlamlarını birlikte değerlendir, güçlü ve zayıf yönlerini yorumla. Açık alanı artırmak için önerilerde bulun.Muhteşem bir youm yap ve mükemmel bir yazı görselinde olsun. Gereksiz karakterli bulundurma # + gibi gibi temiz duru bir analiz görünütüsü çıksın ortaya ve öneri fikri ver. Sadece Türkçe karakterler kullan
-"""
+Yukarıdaki Johari Penceresi sonuçlarına göre, test edilen kişi hakkında psikolojik bir analiz yapmanı istiyorum...
+Profesyonel bir Johari analizi yapmalısın.Oranların anlamlarını birlikte değerlendir, güçlü ve zayıf yönlerini yorumla. Açık alanı artırmak için önerilerde bulun.Muhteşem bir youm yap ve mükemmel bir yazı görselinde olsun. Gereksiz karakterli bulundurma # + gibi gibi temiz duru bir analiz görünütüsü çıksın ortaya ve öneri fikri ver. Sadece Türkçe karakterler kullan
+    """
+
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
         "Content-Type": "application/json"
     }
     data = {
