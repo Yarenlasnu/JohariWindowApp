@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johari Testi Sonuçları</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to right, #fdfcfb, #e2d1c3);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .kapsayici {
+            background-color: #ffffffee;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            max-width: 950px;
+            width: 100%;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            color: #6a1b9a;
+            font-size: 20px;
+            margin-bottom: 25px;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            color: #2c3e50;
+            background-color: #fff;
+        }
+
+        th {
+            background-color: #f1eefc;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .grafik {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .grafik img {
+            max-width: 100%;
+            height: auto;
+            border: 3px solid #d4c0eb;
+            border-radius: 12px;
+        }
+
+        .flash.success,
+        .flash.error {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .flash.success {
+            background-color: #e6f9e6;
+            color: #27632a;
+            border: 1px solid #a5d6a7;
+        }
+
+        .flash.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        input[type="email"] {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 8px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(to right, #7b2cbf, #9d4edd);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #6a1b9a, #8338ec);
+        }
+
+        a {
+            text-decoration: none;
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #27ae60;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .kapsayici {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            input[type="email"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="kapsayici">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <h1>Johari Testi Sonuçları</h1>
+        <h2>{{ yapan }} → {{ test_edilen }}</h2>
+
+        <div class="grafik">
+            <img src="{{ url_for('static', filename=grafik_path) }}" alt="Johari Grafiği">
+        </div>
+
+        <a href="{{ url_for('indir_sonuc') }}">Sonuçları Excel Olarak İndir</a>
+
+        <form method="POST" action="{{ url_for('eposta_gonder') }}">
+            <input type="hidden" name="yapan" value="{{ yapan }}">
+            <input type="hidden" name="grafik_path" value="{{ grafik_path }}">
+            <input type="hidden" name="alanlar_acik" value="{{ alanlar['acik_yuzde'] }}">
+            <input type="hidden" name="alanlar_kor" value="{{ alanlar['kor_yuzde'] }}">
+            <input type="hidden" name="alanlar_gizli" value="{{ alanlar['gizli_yuzde'] }}">
+            <input type="hidden" name="alanlar_bilinmeyen" value="{{ alanlar['bilinmeyen_yuzde'] }}">
+            <input type="hidden" name="yorum" value="{{ yorum }}">
+
+            <label for="eposta">Sonucun gönderileceği e-posta:</label><br>
+            <input type="email" name="eposta" required placeholder="ornek@gmail.com">
+            <br>
+            <button type="submit">📩 E-postayla Gönder</button>
+        </form>
+
+        <div style="margin-top: 40px; text-align: left;">
+            <h2> Yapay Zeka Yorumu</h2>
+            <div
+                style="background-color: #fefefe; border-left: 5px solid #6a1b9a; padding: 20px; font-size: 16px; line-height: 1.6; white-space: pre-wrap; border-radius: 10px;">
+                {{ yorum }}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

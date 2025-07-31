@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Johari Testi - Sorular</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #fdfcfb, #e2d1c3);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            margin: 0;
+        }
+
+        .kapsayici {
+            background-color: #ffffffee;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 850px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        h2 {
+            color: #1f2937;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #374151;
+        }
+
+        .bilgi {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #6b7280;
+        }
+
+        .soru {
+            background-color: #f3f4f6;
+            border-left: 6px solid #8b5cf6;
+            padding: 18px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            transition: background 0.3s ease;
+        }
+
+        .soru:hover {
+            background-color: #e5e7eb;
+        }
+
+        .secenek {
+            margin-top: 8px;
+        }
+
+        label {
+            margin-left: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        input[type="radio"] {
+            transform: scale(1.2);
+            accent-color: #8b5cf6;
+        }
+
+        button {
+            display: block;
+            margin: 40px auto 0;
+            background-color: #9333ea;
+            color: white;
+            padding: 14px 30px;
+            font-size: 17px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button:hover {
+            background-color: #7c3aed;
+        }
+
+        @media (max-width: 600px) {
+            .kapsayici {
+                padding: 25px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            .soru {
+                padding: 15px;
+            }
+
+            button {
+                width: 100%;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="kapsayici">
+        <h2>Test Başlıyor...</h2>
+        <p class="bilgi"><strong>Yapan Kişi:</strong> {{ yapan }}</p>
+        <p class="bilgi"><strong>Yapılan Kişi:</strong> {{ test_edilen }}</p>
+
+        <form method="POST" action="{{ url_for('sonuc_post') }}">
+            {% for soru in sorular %}
+            <div class="soru">
+                <p><strong>{{ soru.id }}. Soru:</strong> {{ soru.metin }}</p>
+                {% set secenekler = {'A': 'Her zaman', 'B': 'Çoğunlukla', 'C': 'Ara sıra ', 'D': 'Hiçbir zaman'} %}
+                {% for harf, aciklama in secenekler.items() %}
+                <div class="secenek">
+                    <input type="radio" name="soru{{ soru.id }}" value="{{ harf }}" required>
+                    <label>{{ harf }} - {{ aciklama }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <input type="hidden" name="yapan" value="{{ yapan }}">
+            <input type="hidden" name="test_edilen" value="{{ test_edilen }}">
+
+            <button type="submit">Testi Bitir</button>
+        </form>
+    </div>
+</body>
+
+</html>

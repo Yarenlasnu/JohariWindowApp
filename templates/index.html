@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johari Testine Başla</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right, #fdfcfb, #e2d1c3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffffee;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 20px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #7b2cbf;
+            outline: none;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            gap: 10px;
+            color: #2c3e50;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+
+        #test_edilen_div {
+            transition: all 0.3s ease;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #7b2cbf, #9d4edd);
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #6a1b9a, #8338ec);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+                border-radius: 14px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            button {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Johari Testine Hoş Geldiniz</h2>
+
+        <form method="POST">
+            <label for="yapan">Adınız Soyadınız (Testi Yapan):</label>
+            <input type="text" id="yapan" name="yapan" required>
+
+            <div class="checkbox-label">
+                <input type="checkbox" id="kendim_icin" name="kendim_icin" onchange="toggleField()">
+                <label for="kendim_icin">Kendim için yapıyorum</label>
+            </div>
+
+            <div id="test_edilen_div">
+                <label for="test_edilen">Test Edilen Kişinin Adı Soyadı:</label>
+                <input type="text" id="test_edilen" name="test_edilen">
+            </div>
+
+            <button type="submit">TESTE BAŞLA</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleField() {
+            const checkbox = document.getElementById("kendim_icin");
+            const div = document.getElementById("test_edilen_div");
+            div.style.display = checkbox.checked ? "none" : "block";
+        }
+        window.onload = toggleField;
+    </script>
+
+</body>
+
+</html>

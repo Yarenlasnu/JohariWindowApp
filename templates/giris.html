@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johari Testi - Giriş</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            max-width: 960px;
+            width: 100%;
+            padding: 40px 60px;
+            margin: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #4a148c;
+            margin-bottom: 0.3em;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 22px;
+            margin-top: 1.8em;
+        }
+
+        p,
+        li {
+            color: #555;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        blockquote {
+            background-color: #f3e5f5;
+            border-left: 6px solid #8e24aa;
+            padding: 15px 25px;
+            font-style: italic;
+            color: #4a148c;
+            margin: 30px 0;
+        }
+
+        .start-button {
+            display: inline-block;
+            margin-top: 40px;
+            background-color: #8e24aa;
+            color: white;
+            padding: 14px 28px;
+            font-size: 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 5px 20px rgba(142, 36, 170, 0.3);
+        }
+
+        .start-button:hover {
+            background-color: #6a1b9a;
+            transform: translateY(-2px);
+        }
+
+        .johari-gorsel {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            p,
+            li {
+                font-size: 15px;
+            }
+
+            .start-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>JOHARI PENCERESİ TESTİ</h1>
+        <h2>Kendini Bilmek, Gerçek Güçtür.</h2>
+
+        <p><strong>Johari Penceresi</strong>, yalnızca psikoloji literatüründe değil; liderlik, iletişim, kişisel
+            gelişim ve öz-farkındalık alanlarında çığır açan bir modeldir.</p>
+
+        <p>Bu test, bir kişinin kendine dair farkındalığını artırmak, başkalarının gözündeki yansımasıyla yüzleşmek ve
+            bilinmeyen potansiyel alanları keşfetmek üzere tasarlanmıştır.</p>
+
+        <blockquote>"Kendini bilmek, başkalarını anlamanın anahtardır."</blockquote>
+
+        <h2>Gerçek Hikâyelerden İlham</h2>
+        <p>Mehmet, sessiz bir öğrenciydi. Ama Johari Penceresi testi sonrasında çevresinden gelen geribildirimlerle
+            yaratıcı ve çözüm odaklı yönlerinin farkına vardı. Bu test, onun için bir dönüşümdü.</p>
+
+        <h2>Bu Test Senin İçin Ne Sağlar?</h2>
+        <ul>
+            <li>Güçlü ve geliştirilmesi gereken yönlerini ayırt etmeni sağlar.</li>
+            <li>Kendine dair farkındalığını derinleştirir.</li>
+            <li>İletilerde algı farklılıklarını ortaya çıkarır.</li>
+        </ul>
+
+        <h2>Cesaret Ediyor Musun?</h2>
+        <p>Sonunda seni 4 bölgeli bir <strong>psikolojik pencere</strong> karşılayacak.
+            <br>Bu pencerede; açık, kör, gizli ve bilinmeyen alanlarının oranlarını öğreneceksin.
+        </p>
+
+        <p><strong>Gerçek bir içgörü için sadece kendin olman yeterli.</strong></p>
+
+        <img src="{{ url_for('static', filename='webimiz/johari-penceresi.png') }}" alt="Johari Penceresi"
+            class="johari-gorsel">
+
+        <a href="/index" class="start-button">TESTE BAŞLA</a>
+    </div>
+</body>
+
+</html>
