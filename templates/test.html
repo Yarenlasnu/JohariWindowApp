@@ -4,141 +4,442 @@
 <head>
     <meta charset="UTF-8">
     <title>Johari Testi - Sorular</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg1: #fdfcfb;
+            --bg2: #e2d1c3;
+            --ink: #1f2937;
+            --muted: #374151;
+            --accent: #8b5cf6;
+            --accent2: #7c3aed;
+            --card: #ffffff;
+            --soft: #f3f4f6;
+            --ok: #10b981;
+            --warn: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
         body {
-            background: linear-gradient(to right, #fdfcfb, #e2d1c3);
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 50px 20px;
+            height: 100%
+        }
+
+        body {
             margin: 0;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(900px 500px at 10% 10%, rgba(139, 92, 246, .12), transparent 60%),
+                linear-gradient(to right, var(--bg1), var(--bg2));
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 28px 16px;
+        }
+
+        /* Shell: gradient border + glass */
+        .shell {
+            width: min(980px, 98vw);
+            padding: 1px;
+            border-radius: 22px;
+            background: linear-gradient(120deg, rgba(139, 92, 246, .35), rgba(124, 58, 237, .18));
+            box-shadow: 0 18px 45px rgba(30, 10, 60, .12);
         }
 
         .kapsayici {
-            background-color: #ffffffee;
-            padding: 50px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            max-width: 850px;
-            width: 100%;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, .96);
+            backdrop-filter: saturate(120%) blur(4px);
+            border-radius: 21px;
+            padding: 22px;
+            overflow: hidden;
+        }
+
+        /* Top bar */
+        .top {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 16px 14px 6px;
+            border-bottom: 1px solid #eee;
         }
 
         h2 {
-            color: #1f2937;
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 25px;
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: .2px
         }
 
-        p {
-            font-size: 16px;
-            line-height: 1.7;
-            color: #374151;
-        }
-
-        .bilgi {
-            font-weight: 600;
-            margin-bottom: 15px;
+        .who {
             color: #6b7280;
+            font-weight: 600;
+            font-size: 14px
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #f3e8ff;
+            color: #6b21a8;
+            font-weight: 700;
+            font-size: 12px
+        }
+
+        /* Progress */
+        .progress {
+            margin: 12px 4px 0;
+            height: 10px;
+            border-radius: 999px;
+            background: #eef2ff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar {
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 999px;
+            transition: width .25s ease;
+        }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            color: #6b7280;
+            font-size: 12px;
+            margin: 6px 4px 0
+        }
+
+        /* Question */
+        .form {
+            padding: 18px 8px 8px
         }
 
         .soru {
-            background-color: #f3f4f6;
-            border-left: 6px solid #8b5cf6;
-            padding: 18px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            transition: background 0.3s ease;
+            background: var(--soft);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 18px;
+            margin: 16px 0;
+            transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
         }
 
         .soru:hover {
-            background-color: #e5e7eb;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
+            border-color: #e7dbf0;
+            background: #eef2ff33
         }
 
-        .secenek {
-            margin-top: 8px;
+        .soru p {
+            margin: 0 0 12px;
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--muted)
         }
 
-        label {
-            margin-left: 8px;
-            font-weight: 500;
-            color: #374151;
+        .soru p b {
+            color: #111827
         }
 
-        input[type="radio"] {
-            transform: scale(1.2);
-            accent-color: #8b5cf6;
+        /* Options as cards */
+        .secenekler {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px
         }
 
-        button {
-            display: block;
-            margin: 40px auto 0;
-            background-color: #9333ea;
-            color: white;
-            padding: 14px 30px;
-            font-size: 17px;
-            font-weight: 600;
-            border: none;
-            border-radius: 10px;
+        @media (max-width:640px) {
+            .secenekler {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .opt {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            background: #fff;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+            user-select: none;
         }
 
-        button:hover {
-            background-color: #7c3aed;
+        .opt:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, .06)
         }
 
-        @media (max-width: 600px) {
-            .kapsayici {
-                padding: 25px;
-            }
+        .opt input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none
+        }
 
-            h2 {
-                font-size: 22px;
-            }
+        .bullet {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 2px solid #c7c7c7;
+            flex: none;
+            display: inline-block
+        }
 
-            .soru {
-                padding: 15px;
-            }
+        .txt {
+            font-weight: 500;
+            color: #374151
+        }
 
-            button {
-                width: 100%;
-                font-size: 16px;
-            }
+        .hint {
+            color: #6b7280;
+            font-size: 12px
+        }
+
+        .opt.selected {
+            border-color: var(--accent);
+            background: #faf5ff
+        }
+
+        .opt.selected .bullet {
+            border-color: var(--accent);
+            background: radial-gradient(circle, var(--accent) 45%, transparent 46%)
+        }
+
+        /* Bottom actions */
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 0 4px
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 22px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 17px;
+            color: #fff;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            box-shadow: 0 12px 30px rgba(124, 58, 237, .28);
+            transition: transform .08s ease, box-shadow .2s ease, filter .2s ease, opacity .2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 34px rgba(124, 58, 237, .34);
+            filter: saturate(1.05)
+        }
+
+        .btn[disabled] {
+            opacity: .55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none
+        }
+
+        .msg {
+            font-size: 12px;
+            color: #6b7280
+        }
+
+        /* Sticky submit (mobile comfort) */
+        .sticky {
+            position: sticky;
+            bottom: 0;
+            background: linear-gradient(to top, #fff 60%, transparent);
+            padding-top: 8px;
+            margin-top: 8px;
         }
     </style>
 </head>
 
-<body>
-    <div class="kapsayici">
-        <h2>Test Başlıyor...</h2>
-        <p class="bilgi"><strong>Yapan Kişi:</strong> {{ yapan }}</p>
-        <p class="bilgi"><strong>Yapılan Kişi:</strong> {{ test_edilen }}</p>
+<body data-key="{{ yapan }}__{{ test_edilen }}">
+    <div class="shell">
+        <div class="kapsayici">
 
-        <form method="POST" action="{{ url_for('sonuc_post') }}">
-            {% for soru in sorular %}
-            <div class="soru">
-                <p><strong>{{ soru.id }}. Soru:</strong> {{ soru.metin }}</p>
-                {% set secenekler = {'A': 'Her zaman', 'B': 'Çoğunlukla', 'C': 'Ara sıra ', 'D': 'Hiçbir zaman'} %}
-                {% for harf, aciklama in secenekler.items() %}
-                <div class="secenek">
-                    <input type="radio" name="soru{{ soru.id }}" value="{{ harf }}" required>
-                    <label>{{ harf }} - {{ aciklama }}</label>
+            <!-- Üst bilgi + ilerleme -->
+            <div class="top">
+                <div>
+                    <h2>Test Başlıyor...</h2>
+                    <div class="who">Yapan: <b>{{ yapan }}</b> — Yapılan: <b>{{ test_edilen }}</b></div>
+                </div>
+                <div class="chip">Johari • 48 Soru</div>
+            </div>
+
+            <div class="progress">
+                <div class="bar" id="bar"></div>
+            </div>
+            <div class="meta"><span id="done">0/0 yanıtlandı</span><span id="tip">İpucu: Bir seçeneğe tıkladığında
+                    otomatik olarak sıradaki soruya kayar.</span></div>
+
+            <!-- Form -->
+            <form class="form" method="POST" action="{{ url_for('sonuc_post') }}" id="form">
+                {% for soru in sorular %}
+                <div class="soru" data-q="{{soru.id}}">
+                    <p><b>{{ soru.id }}. Soru:</b> {{ soru.metin }}</p>
+                    {% set secenekler = {'A': 'Her zaman', 'B': 'Çoğunlukla', 'C': 'Ara sıra', 'D': 'Hiçbir zaman'} %}
+                    <div class="secenekler">
+                        {% for harf, aciklama in secenekler.items() %}
+                        {% set oid = "q" ~ soru.id ~ "_" ~ harf %}
+                        <label class="opt" for="{{ oid }}">
+                            <span class="bullet"></span>
+                            <span class="txt">{{ harf }} - {{ aciklama }}</span>
+                            <input type="radio" id="{{ oid }}" name="soru{{ soru.id }}" value="{{ harf }}" required>
+                        </label>
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endfor %}
-            </div>
-            {% endfor %}
 
-            <input type="hidden" name="yapan" value="{{ yapan }}">
-            <input type="hidden" name="test_edilen" value="{{ test_edilen }}">
+                <input type="hidden" name="yapan" value="{{ yapan }}">
+                <input type="hidden" name="test_edilen" value="{{ test_edilen }}">
 
-            <button type="submit">Testi Bitir</button>
-        </form>
+                <!-- Sticky actions -->
+                <div class="sticky">
+                    <div class="actions">
+                        <button class="btn" type="submit" id="submitBtn" disabled>Testi Bitir</button>
+                    </div>
+                    <div class="actions">
+                        <div class="msg" id="status">Lütfen tüm soruları yanıtlayın.</div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById('form');
+            const submitBtn = document.getElementById('submitBtn');
+            const bar = document.getElementById('bar');
+            const done = document.getElementById('done');
+            const status = document.getElementById('status');
+            const KEY = "johariCevaplar_v1::" + (document.body.dataset.key || "oturum");
+
+            const questions = Array.from(document.querySelectorAll('.soru'));
+            const total = questions.length;
+            done.textContent = `0/${total} yanıtlandı`;
+
+            // Autosave yükle
+            const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+            for (const [name, val] of Object.entries(saved)) {
+                const input = form.querySelector(`input[name="${name}"][value="${val}"]`);
+                if (input) { input.checked = true; markSelected(input); }
+            }
+            refreshProgress();
+
+            // Tıklamada seç ve ilerle
+            form.addEventListener('change', (e) => {
+                const el = e.target;
+                if (el.type === 'radio') {
+                    markSelected(el);
+                    saved[el.name] = el.value;
+                    localStorage.setItem(KEY, JSON.stringify(saved));
+                    refreshProgress();
+                    // Sonraki yanıtsız soruya yumuşak kaydır
+                    scrollNext(el.name);
+                }
+            });
+
+            // Seçilen kartı vurgula
+            function markSelected(input) {
+                const group = form.querySelectorAll(`input[name="${input.name}"]`);
+                group.forEach(i => i.closest('.opt').classList.remove('selected'));
+                input.closest('.opt').classList.add('selected');
+            }
+
+            // İlerleme hesapla
+            function refreshProgress() {
+                const answered = form.querySelectorAll('input[type="radio"]:checked').length;
+                const pct = Math.round((answered / total) * 100);
+                bar.style.width = pct + '%';
+                done.textContent = `${answered}/${total} yanıtlandı`;
+                if (answered === total) {
+                    submitBtn.disabled = false;
+                    status.textContent = "Hazırsın. Gönder butonuna tıklayabilirsin.";
+                    status.style.color = "var(--ok)";
+                } else {
+                    submitBtn.disabled = true;
+                    status.textContent = "Lütfen tüm soruları yanıtlayın.";
+                    status.style.color = "#6b7280";
+                }
+            }
+
+            // Sonraki yanıtsız soruya kaydır
+            function scrollNext(currentName) {
+                // currentName = "soru12" gibi
+                const currentIndex = parseInt(currentName.replace('soru', ''), 10);
+                let target = null;
+                for (let i = currentIndex + 1; i <= total; i++) {
+                    if (!form.querySelector(`input[name="soru${i}"]:checked`)) {
+                        target = form.querySelector(`.soru[data-q="${i}"]`); break;
+                    }
+                }
+                if (!target) {
+                    // yoksa geride eksik var mı?
+                    for (let i = 1; i <= total; i++) {
+                        if (!form.querySelector(`input[name="soru${i}"]:checked`)) {
+                            target = form.querySelector(`.soru[data-q="${i}"]`); break;
+                        }
+                    }
+                }
+                if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            }
+
+            // Tek tık koruması + durum
+            form.addEventListener('submit', (e) => {
+                if (submitBtn.disabled) { e.preventDefault(); return; }
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Gönderiliyor…';
+                status.textContent = 'Lütfen bekleyin, sonuçlarınız hazırlanıyor.';
+                status.style.color = "var(--muted)";
+                // Başarıyla sonuç sayfasına gidildiğinde temizlenmesi için ipucu:
+                // sonuc sayfasında localStorage.removeItem(KEY) ekleyebilirsiniz.
+            });
+
+            // Klavye kısayolu: 1-4 ile seçenek işaretle
+            document.addEventListener('keydown', (e) => {
+                if (!/^[1-4]$/.test(e.key)) return;
+                // ekranda görünen ilk soru grubunu bul
+                const firstVisible = questions.find(q => {
+                    const r = q.getBoundingClientRect();
+                    return r.top < window.innerHeight && r.bottom > 80;
+                }) || questions[0];
+                if (!firstVisible) return;
+                const name = 'soru' + firstVisible.dataset.q;
+                const map = { 1: 'A', 2: 'B', 3: 'C', 4: 'D' };
+                const input = form.querySelector(`input[name="${name}"][value="${map[e.key]}"]`);
+                if (input) {
+                    input.checked = true;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+
+        })();
+    </script>
 </body>
 
 </html>

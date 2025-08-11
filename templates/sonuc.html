@@ -3,228 +3,564 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Johari Testi Sonuçları</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        :root {
+            --bg1: #fdfcfb;
+            --bg2: #e2d1c3;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --fine: #9aa3b2;
+            --accent: #8b5cf6;
+            --accent2: #6a1b9a;
+            --ok: #10b981;
+            --warn: #f59e0b;
+            --card: rgba(255, 255, 255, .92);
+            --border: #e8e6f3;
+            --shadow: 0 20px 60px rgba(30, 10, 60, .15);
+        }
 
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
         }
 
         body {
-            background: linear-gradient(to right, #fdfcfb, #e2d1c3);
-            font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(900px 500px at 10% 10%, rgba(139, 92, 246, .10), transparent 60%),
+                linear-gradient(120deg, var(--bg1), var(--bg2));
             min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 28px 16px;
+        }
+
+        /* Shell + glass */
+        .shell {
+            width: min(1100px, 98vw);
+            padding: 1px;
+            border-radius: 24px;
+            background: linear-gradient(120deg, rgba(139, 92, 246, .35), rgba(124, 58, 237, .18), rgba(139, 92, 246, .10));
+            box-shadow: var(--shadow);
         }
 
         .kapsayici {
-            background-color: #ffffffee;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            max-width: 950px;
-            width: 100%;
-            animation: fadeIn 0.6s ease-in-out;
+            border-radius: 23px;
+            background: var(--card);
+            backdrop-filter: saturate(120%) blur(5px);
+            overflow: hidden
+        }
+
+        /* Header */
+        .header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            padding: 26px 28px;
+            border-bottom: 1px solid var(--border)
         }
 
         h1 {
+            margin: 0;
             font-size: 28px;
-            color: #2c3e50;
-            margin-bottom: 8px;
+            letter-spacing: .2px
         }
 
-        h2 {
-            color: #6a1b9a;
-            font-size: 20px;
-            margin-bottom: 25px;
-        }
-
-        table {
-            margin: 20px auto;
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 700px;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        th,
-        td {
-            padding: 14px;
-            border: 1px solid #ddd;
-            font-size: 15px;
-            color: #2c3e50;
-            background-color: #fff;
-        }
-
-        th {
-            background-color: #f1eefc;
+        .pair {
+            color: var(--muted);
             font-weight: 600;
+            margin-top: 6px
         }
 
-        tr:nth-child(even) {
-            background-color: #fafafa;
+        .chip {
+            align-self: start;
+            background: #f3e8ff;
+            color: #6b21a8;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 999px
         }
 
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1.25fr .95fr;
+            gap: 18px;
+            padding: 22px 22px
+        }
+
+        @media (max-width:960px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 8px 26px rgba(0, 0, 0, .06)
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 18px
+        }
+
+        /* Graph */
         .grafik {
             display: flex;
+            align-items: center;
             justify-content: center;
-            margin: 30px 0;
+            padding: 10px
         }
 
         .grafik img {
             max-width: 100%;
-            height: auto;
-            border: 3px solid #d4c0eb;
             border-radius: 12px;
+            border: 3px solid #e8defa
         }
 
-        .flash.success,
-        .flash.error {
+        /* Stats rings */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px
+        }
+
+        @media (max-width:560px) {
+            .stats {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            font-weight: 500;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #fafaff
         }
 
-        .flash.success {
-            background-color: #e6f9e6;
-            color: #27632a;
-            border: 1px solid #a5d6a7;
+        .ring {
+            --pct: 0;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background:
+                conic-gradient(var(--accent) calc(var(--pct)*1%), #ede9fe 0),
+                radial-gradient(circle 28px, #fff 98%, transparent 100%);
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            color: #4b5563;
         }
 
-        .flash.error {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
+        .stat .txt {
+            line-height: 1.45
         }
 
-        input[type="email"] {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            width: 100%;
-            max-width: 300px;
-            margin-top: 8px;
+        .stat .txt b {
+            display: block;
+            font-size: 14px
         }
 
-        button {
-            padding: 12px 24px;
-            background: linear-gradient(to right, #7b2cbf, #9d4edd);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 15px;
-            transition: 0.3s ease;
+        .stat .txt span {
+            color: var(--muted);
+            font-size: 12px
         }
 
-        button:hover {
-            background: linear-gradient(to right, #6a1b9a, #8338ec);
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center
         }
 
-        a {
+        .btn,
+        .alink {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #fff;
+            font-weight: 700;
             text-decoration: none;
-            display: inline-block;
-            background: #2ecc71;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 12px 30px rgba(124, 58, 237, .28);
+            transition: transform .08s ease, box-shadow .2s ease, filter .2s ease
         }
 
-        a:hover {
-            background-color: #27ae60;
+        .btn:hover,
+        .alink:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 34px rgba(124, 58, 237, .34);
+            filter: saturate(1.05)
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .btn.secondary {
+            background: #fff;
+            color: #334155;
+            border-color: #e2e8f0;
+            box-shadow: none;
         }
 
-        @media (max-width: 600px) {
-            .kapsayici {
-                padding: 24px;
-            }
+        .btn.secondary:hover {
+            box-shadow: 0 8px 22px rgba(0, 0, 0, .08)
+        }
 
-            h1 {
-                font-size: 22px;
-            }
+        .hint {
+            font-size: 12px;
+            color: var(--fine)
+        }
 
-            h2 {
-                font-size: 18px;
-            }
+        /* Email card */
+        .mail {
+            display: grid;
+            gap: 10px
+        }
 
-            table {
-                font-size: 14px;
-            }
+        .mail label {
+            font-weight: 700;
+            color: #374151
+        }
 
-            input[type="email"] {
-                width: 100%;
-            }
+        .mail input[type="email"] {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            outline: none
+        }
+
+        .mail input[type="email"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .20)
+        }
+
+        .mail .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        /* Comment / Story */
+        .ai {
+            border-left: 5px solid var(--accent2);
+            background: #fff;
+            padding: 16px;
+            border-radius: 12px
+        }
+
+        .story {
+            margin-top: 12px
+        }
+
+        .story summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #fafafa;
+            font-weight: 700;
+            color: #4b5563;
+        }
+
+        .story summary::marker {
+            display: none
+        }
+
+        .story[open] summary {
+            background: #f4f0ff
+        }
+
+        /* Flash */
+        .flash {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-weight: 600
+        }
+
+        .success {
+            background: #e6f9e6;
+            color: #27632a;
+            border: 1px solid #a5d6a7
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a
+        }
+
+        /* Footer strip */
+        .foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 22px;
+            border-top: 1px solid var(--border);
+            background: #fff
+        }
+
+        .foot small {
+            color: var(--fine)
         }
     </style>
 </head>
 
 <body>
-    <div class="kapsayici">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
+    <div class="shell">
+        <div class="kapsayici">
+            <!-- Flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div style="padding:16px 22px 0">
+                {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
 
-        <h1>Johari Testi Sonuçları</h1>
-        <h2>{{ yapan }} → {{ test_edilen }}</h2>
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <h1>Johari Testi Sonuçları</h1>
+                    <div class="pair">{{ yapan }} → {{ test_edilen }}</div>
+                </div>
+                <div class="chip">Johari • 48 Soru</div>
+            </div>
 
-        <div class="grafik">
-            <img src="{{ url_for('static', filename=grafik_path) }}" alt="Johari Grafiği">
-        </div>
+            <!-- Content -->
+            <div class="grid">
+                <!-- Left: Graph + Actions + Story -->
+                <div class="card">
+                    <h3>Johari Penceresi</h3>
+                    <div class="grafik">
+                        <img src="{{ url_for('static', filename=grafik_path) }}" alt="Johari Penceresi Grafiği">
+                    </div>
 
-        <a href="{{ url_for('indir_sonuc') }}">Sonuçları Excel Olarak İndir</a>
+                    <div class="actions" style="margin-top:8px">
+                        <a class="alink" href="{{ url_for('indir_sonuc') }}">⬇️ Excel Olarak İndir</a>
+                        <button class="btn secondary" type="button" id="printBtn">🖨️ PDF’e Yazdır</button>
+                        <a class="btn secondary" href="{{ url_for('giris') }}">↩️ Yeniden Dene</a>
+                    </div>
+                    <div class="hint" style="margin-top:6px">İpucu: PDF yazdır seçeneğiyle bu sayfayı doğrudan PDF
+                        olarak kaydedebilirsin.</div>
 
-        <form method="POST" action="{{ url_for('eposta_gonder') }}">
-            <input type="hidden" name="yapan" value="{{ yapan }}">
-            <input type="hidden" name="grafik_path" value="{{ grafik_path }}">
-            <input type="hidden" name="alanlar_acik" value="{{ alanlar['acik_yuzde'] }}">
-            <input type="hidden" name="alanlar_kor" value="{{ alanlar['kor_yuzde'] }}">
-            <input type="hidden" name="alanlar_gizli" value="{{ alanlar['gizli_yuzde'] }}">
-            <input type="hidden" name="alanlar_bilinmeyen" value="{{ alanlar['bilinmeyen_yuzde'] }}">
-            <input type="hidden" name="yorum" value="{{ yorum }}">
+                    <details class="story" open>
+                        <summary>📖 Zafer Bey’in Hikayesi</summary>
 
-            <label for="eposta">Sonucun gönderileceği e-posta:</label><br>
-            <input type="email" name="eposta" required placeholder="ornek@gmail.com">
-            <br>
-            <button type="submit">📩 E-postayla Gönder</button>
-        </form>
+                        <!-- Başta gizle; JS düzgün paragraflara dönüştürüp gösterecek -->
+                        <div class="ai" id="hikayeMetni" style="margin-top:10px; display:none;">
+                            <h3 style="margin:0 0 8px">Bilinenden Bilinmeyene: Küçük Bir Dönüşüm</h3>
+                            Zafer beyin hikayesi : Zafer Bey’in farklı bir kütüphaneci olacağı henüz üniversitede
+                            öğrenci olduğu yıllarda kendini
+                            hissettirmişti. Yaklaşık on iki yıl önce, mezun olur olmaz genç bir kütüphaneci olarak il
+                            halk
+                            kütüphanesinde işe başladı. Bu süre içinde önce katalog uzmanlığından katalog birim
+                            şefliğine,
+                            daha sonra şeflikten teknik hizmetlerden sorumlu müdür yardımcılığına hızlı bir şekilde
+                            terfi etmesi
+                            kimseyi şaşırtmadı. Bu hızlı ilerleme herkes tarafından doğal ve hak edilmiş bir ilerleme
+                            olarak
+                            karşılandı. Fakat her ne olduysa izleyen zaman dilimi içerisinde bu ilerleme durdu, çabaları
+                            bunu
+                            değiştirecek bir etki yaratmadı.
+                            Diğer çalışanlar tarafından başarılı, saygın görüldüğüne, hatta bazen kararlı
+                            yaklaşımlarından dolayı
+                            kendisinden biraz çekinildiğine inanmaktaydı. Ufak tefek tereddütlere rağmen genel olarak
+                            performansına ilişkin değerlendirmeler hep olumluydu. Kütüphane üst yöneticilerinin,
+                            personelin
+                            hizmet-içi eğitim etkinliklerine katılmasını önemli gördüğünü, katılım gösterenlere daha
+                            olumlu
+                            bakıldığını duydu. Bu tür eğitimlere sıcak bakmamasına rağmen sırf üst yöneticilerine
+                            mesleğini ne
+                            kadar önemsediğine ilişkin bir mesaj gönderme umuduyla düzenlenen bir kişisel gelişim
+                            seminerine
+                            katıldı. Eğer bu da işe yaramazsa başka bir kuruma geçişi seçenekleri arasında
+                            değerlendirmekteydi.
+                            Katıldığı bu kişisel gelişim seminerinin ilk oturumunda tüm katılımcılardan yirmi maddeden
+                            oluşan
+                            bir Johari Penceresi Anketi doldurmaları istendi. Zafer Bey anketi tamamlayıp, sonuçları
+                            değerlendirdiğinde oluşan Johari Penceresi’nin şekildeki gibi olduğunu gördü.
+                            Zafer Bey’in Öz Değerlendirmesine bakıldığında açık alanın oldukça geniş olduğu görüldü
+                            ancak Bu değerlendirmeden sonra on iki katılımcıdan oluşan grup kendilerine verilen bir
+                            problem durumu
+                            üzerinde ortak bir etkinlik yürütmeye başladı. Grup çalışması bir süre a gayet eğlenceli ve
+                            etkili bir
+                            şekilde devam etti. Tam çalışmanın orta yerinde Zafer Bey’in oluşturulması tasarlanan
+                            kütüphanedeki materyallerin sınıflamasına ilişkin önerisi kabul görmeyince kendini kötü
+                            hissetti
+                            çünkü önerisinin doğru olduğu konusunda hiç şüphesi yoktu. Gerçekten de önerisi yerindeydi
+                            ve
+                            grup bu öneriyi kabul etseydi grubun performansı çok daha başarılı olacaktı.
+                            Bu grup çalışmasından sonra seminer katılımcılarından daha önce kendileri için doldurdukları
+                            Johari Penceresi anketlerini birbirleri için doldurmaları istendi. Zafer Bey için takımının
+                            verdiği
+                            şekildeki geri bildirim net ve sarsıcıydı.
+                            Zafer Bey’in Takımının Verdiği Dönütte açık alan oldukça darken kör ve bilinmeyen alan
+                            oldukça genişti . Geri bildirimle hayal kırıklığına uğrayan Zafer Bey’e katılımcı
+                            görüşlerinin kendisini şaşırtıp
+                            şaşırtmadığı soruldu. Bir süre düşündü, yaşadıklarını gözden geçirdi. Oturum yöneticisi
+                            kendisine
+                            davranışını etkileyenin ne olduğunu sordu. Son olarak da onun takımdaki diğer üyeler
+                            hakkında ne
+                            düşündüğünü bilmek istediğini belirtti. Grubun kendi fikrine karşı çıkmış olmasından başka
+                            söyleyecek bir şeyi olmadığını fark etmesi onu hayrete düşürdü. Kendisini gözlem ve analiz
+                            konusunda çok güçlü bir olarak görmesine rağmen söyleyebileceği kayda değer bir şey
+                            olmadığını
+                            far ketti.
+                            Başlangıçtaki kızgınlığını, sonrasındaki mahcubiyetini ve devamındaki rahatlamasını ve diğer
+                            tüm
+                            düşünce ve hislerini katılımcılarla paylaştı. Seminer gününün sonuna doğru kütüphanede neden
+                            daha fazla yükselemediğini anlamaya başladı. Hırslarının yıllarca kendisini nasıl
+                            tükettiğini
+                            görmeye başladı. Seminerin devamında da Zafer Bey kendini keşfetmeye devam etti.
+                        </div>
+                    </details>
 
-        <div style="margin-top: 40px; text-align: left;">
-            <h2> Yapay Zeka Yorumu</h2>
-            <div
-                style="background-color: #fefefe; border-left: 5px solid #6a1b9a; padding: 20px; font-size: 16px; line-height: 1.6; white-space: pre-wrap; border-radius: 10px;">
-                {{ yorum }}
+                    <script>
+                        (function () {
+                            const el = document.getElementById('hikayeMetni');
+
+                            // 1) Ham metni al
+                            let raw = el.textContent || "";
+
+                            // 2) Satır sonlarını normalize et (Windows/macOS/Linux)
+                            raw = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+                            // 3) Çift (veya daha fazla) satır sonunu paragraf ayırıcı say;
+                            //    paragrafların içindeki tekli satır sonlarını boşluğa çevir.
+                            const paras = raw
+                                .split(/\n{2,}/)              // paragraflara böl
+                                .map(p => p.replace(/\n+/g, ' ').trim()) // tekli newline -> boşluk
+                                .filter(Boolean);
+
+                            // 4) Güvenli şekilde HTML’leştir (XSS’den kaçınmak için basit kaçış)
+                            const esc = s => s
+                                .replace(/&/g, '&amp;')
+                                .replace(/</g, '&lt;')
+                                .replace(/>/g, '&gt;');
+
+                            // 5) Paragrafları DOM’a yaz
+                            el.innerHTML = paras.map(p => `<p style="margin:0 0 12px; line-height:1.7; text-align:justify; text-justify:inter-word;">${esc(p)}</p>`).join('');
+
+                            // 6) Göster
+                            el.style.display = '';
+                        })();
+                    </script>
+
+                </div>
+
+                <!-- Right: Stats + Mail + AI comment -->
+                <div class="card">
+                    <h3>Özet Göstergeler</h3>
+                    <div class="stats" id="stats">
+                        <div class="stat">
+                            <div class="ring" data-pct="{{ alanlar['acik_yuzde']|float }}">%{{ alanlar['acik_yuzde'] }}
+                            </div>
+                            <div class="txt"><b>Açık Alan</b><span>Paylaşım & şeffaflık</span></div>
+                        </div>
+                        <div class="stat">
+                            <div class="ring" data-pct="{{ alanlar['kor_yuzde']|float }}">%{{ alanlar['kor_yuzde'] }}
+                            </div>
+                            <div class="txt"><b>Kör Alan</b><span>Geri bildirim ihtiyacı</span></div>
+                        </div>
+                        <div class="stat">
+                            <div class="ring" data-pct="{{ alanlar['gizli_yuzde']|float }}">%{{ alanlar['gizli_yuzde']
+                                }}</div>
+                            <div class="txt"><b>Gizli Alan</b><span>Öz-açım fırsatı</span></div>
+                        </div>
+                        <div class="stat">
+                            <div class="ring" data-pct="{{ alanlar['bilinmeyen_yuzde']|float }}">%{{
+                                alanlar['bilinmeyen_yuzde'] }}</div>
+                            <div class="txt"><b>Bilinmeyen</b><span>Keşif & deneyim</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:14px">
+                        <h3 style="margin-bottom:8px">Sonucu E-posta ile Gönder</h3>
+                        <form class="mail" method="POST" action="{{ url_for('eposta_gonder') }}" id="mailForm">
+                            <input type="hidden" name="yapan" value="{{ yapan }}">
+                            <input type="hidden" name="grafik_path" value="{{ grafik_path }}">
+                            <input type="hidden" name="alanlar_acik" value="{{ alanlar['acik_yuzde'] }}">
+                            <input type="hidden" name="alanlar_kor" value="{{ alanlar['kor_yuzde'] }}">
+                            <input type="hidden" name="alanlar_gizli" value="{{ alanlar['gizli_yuzde'] }}">
+                            <input type="hidden" name="alanlar_bilinmeyen" value="{{ alanlar['bilinmeyen_yuzde'] }}">
+                            <input type="hidden" name="yorum" value="{{ yorum }}">
+
+                            <label for="eposta">E-posta adresi</label>
+                            <div class="row">
+                                <input type="email" id="eposta" name="eposta" required placeholder="ornek@gmail.com">
+                                <button class="btn" type="submit" id="sendBtn">📩 Gönder</button>
+                            </div>
+                            <div class="hint" id="mailHint">Tek tık, saniyeler içinde kutunda.</div>
+                        </form>
+                    </div>
+
+                    <div class="ai" style="margin-top:14px">
+                        <h3 style="margin:0 0 8px">Yapay Zeka Yorumu</h3>
+                        <div style="white-space:pre-wrap; line-height:1.65">{{ yorum }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="foot">
+                <small>Gizlilik: Sonuç dosyaları herkese açık değildir; yalnızca bu oturumda görüntülenir.</small>
+                <small id="savedMsg">Otomatik kayıt: Test cevapları temizlendi.</small>
             </div>
         </div>
     </div>
+
+    <script>
+        // Yüzde halkalarını boya (conic-gradient)
+        document.querySelectorAll('.ring').forEach(r => {
+            const pct = Math.max(0, Math.min(100, parseFloat(r.dataset.pct || '0')));
+            r.style.setProperty('--pct', pct);
+        });
+
+        // PDF yazdır
+        document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+        // Mail: tek tık koruması
+        const mailForm = document.getElementById('mailForm');
+        const sendBtn = document.getElementById('sendBtn');
+        const mailHint = document.getElementById('mailHint');
+        mailForm.addEventListener('submit', (e) => {
+            if (sendBtn.dataset.locked === '1') { e.preventDefault(); return; }
+            sendBtn.dataset.locked = '1';
+            sendBtn.textContent = 'Gönderiliyor…';
+            sendBtn.style.opacity = '.85';
+            mailHint.textContent = 'Gönderiliyor, lütfen bekleyin…';
+        });
+
+        // Test sayfası otomatik kaydını temizle (varsa)
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && k.startsWith('johariCevaplar_v1')) { localStorage.removeItem(k); break; }
+            }
+        } catch (_) { }
+    </script>
 </body>
 
 </html>

@@ -2,164 +2,379 @@
 <html lang="tr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Johari Testi - Giriş</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --bg1: #fdfbfb;
+            --bg2: #ebedee;
+            --ink: #2c3e50;
+            --muted: #555;
+            --accent: #8e24aa;
+            --accent2: #6a1b9a;
+            --quote-bg: #f3e5f5;
+            --quote-border: #8e24aa;
+            --card: #ffffff;
+            --shadow: 0 18px 45px rgba(30, 10, 60, .12);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background:
+                radial-gradient(800px 400px at 10% 10%, rgba(142, 36, 170, .06), transparent 60%),
+                linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
         }
 
+        /* Container: gradient border + subtle glass */
         .container {
-            background: #fff;
-            max-width: 960px;
-            width: 100%;
-            padding: 40px 60px;
-            margin: 40px;
-            border-radius: 16px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
-            animation: fadeIn 0.6s ease-in-out;
+            width: min(960px, 95vw);
+            position: relative;
+            border-radius: 22px;
+            padding: 1px;
+            background: linear-gradient(120deg, rgba(142, 36, 170, .35), rgba(106, 27, 154, .25), rgba(142, 36, 170, .1));
+            box-shadow: var(--shadow);
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
+        .inner {
+            background: rgba(255, 255, 255, .92);
+            backdrop-filter: saturate(120%) blur(4px);
+            border-radius: 21px;
+            overflow: hidden;
+        }
+
+        @media (prefers-reduced-motion:no-preference) {
+            .container {
+                animation: pop .5s ease
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            @keyframes pop {
+                from {
+                    transform: translateY(14px);
+                    opacity: .0
+                }
+
+                to {
+                    transform: translateY(0);
+                    opacity: 1
+                }
             }
         }
 
-        h1 {
-            font-size: 32px;
+        /* HERO */
+        .hero {
+            position: relative;
+            padding: 36px 56px;
+            display: grid;
+            gap: 10px;
+            background:
+                radial-gradient(900px 360px at 12% 0%, rgba(142, 36, 170, .08), transparent 60%),
+                linear-gradient(120deg, #fff, #faf7ff);
+            border-bottom: 1px solid #eee;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 4vw, 44px);
+            margin: 0;
+            line-height: 1.08;
+            letter-spacing: .2px;
+            background: linear-gradient(90deg, #4a148c, #6a1b9a, #4a148c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 200% 100%;
+        }
+
+        @media (prefers-reduced-motion:no-preference) {
+            .hero h1 {
+                animation: shine 6s ease-in-out infinite
+            }
+
+            @keyframes shine {
+
+                0%,
+                100% {
+                    background-position: 0% 50%
+                }
+
+                50% {
+                    background-position: 100% 50%
+                }
+            }
+        }
+
+        .hero h2 {
+            font-size: clamp(18px, 2.6vw, 22px);
+            color: var(--ink);
+            margin: .3em 0 0;
+            font-weight: 700;
+        }
+
+        .quote {
+            margin: 14px 0 0;
+            background: var(--quote-bg);
+            border-left: 6px solid var(--quote-border);
+            padding: 12px 16px;
+            font-style: italic;
             color: #4a148c;
-            margin-bottom: 0.3em;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(142, 36, 170, .12) inset;
         }
 
-        h2 {
-            color: #2c3e50;
-            font-size: 22px;
-            margin-top: 1.8em;
+        /* CONTENT */
+        .content {
+            padding: 30px 56px 44px;
         }
 
-        p,
-        li {
-            color: #555;
+        .content p,
+        .content li {
+            color: var(--muted);
             font-size: 17px;
             line-height: 1.7;
         }
 
+        .content h3 {
+            color: var(--ink);
+            font-size: 22px;
+            margin: 22px 0 10px;
+        }
+
         ul {
             padding-left: 20px;
+            margin: 8px 0 0;
         }
 
-        blockquote {
-            background-color: #f3e5f5;
-            border-left: 6px solid #8e24aa;
-            padding: 15px 25px;
-            font-style: italic;
-            color: #4a148c;
-            margin: 30px 0;
+        /* Steps: tiny hover lift */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 10px
         }
 
-        .start-button {
-            display: inline-block;
-            margin-top: 40px;
-            background-color: #8e24aa;
-            color: white;
-            padding: 14px 28px;
-            font-size: 18px;
+        .step {
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 14px;
+            padding: 12px 14px;
+            transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+        }
+
+        .step b {
+            color: #4a148c
+        }
+
+        .step:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
+            border-color: #e7dbf0
+        }
+
+        .privacy {
+            background: #fff;
+            border: 1px dashed #c7c7c7;
             border-radius: 12px;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.2s;
-            box-shadow: 0 5px 20px rgba(142, 36, 170, 0.3);
-        }
-
-        .start-button:hover {
-            background-color: #6a1b9a;
-            transform: translateY(-2px);
+            padding: 14px 16px;
+            margin-top: 16px;
+            font-size: 15px;
+            color: #666
         }
 
         .johari-gorsel {
             max-width: 100%;
             border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            margin-top: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .10);
+            margin: 22px 0 8px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
+        /* CTA: centered + micro‑interactions */
+        .cta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            /* ORTALANDI */
+            margin-top: 26px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .start-button {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #fff;
+            padding: 14px 22px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 14px;
+            text-decoration: none;
+            box-shadow: 0 8px 28px rgba(142, 36, 170, .28);
+            transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(142, 36, 170, .35);
+            filter: saturate(1.05)
+        }
+
+        /* Pulse halo */
+        .cta::after {
+            content: "";
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(142, 36, 170, .18), transparent 60%);
+            pointer-events: none;
+            opacity: .0;
+            transform: translateY(8px);
+        }
+
+        @media (prefers-reduced-motion:no-preference) {
+            .cta:hover::after {
+                animation: halo 1.4s ease both
             }
 
-            h1 {
-                font-size: 26px;
+            @keyframes halo {
+                from {
+                    opacity: 0;
+                    transform: scale(.8)
+                }
+
+                to {
+                    opacity: 1;
+                    transform: scale(1)
+                }
+            }
+        }
+
+        /* Click ripple (pure CSS) */
+        .start-button:active::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, .35) 0%, rgba(255, 255, 255, 0) 60%);
+            opacity: .7;
+            transition: opacity .35s ease;
+        }
+
+        .loading {
+            display: none;
+            font-size: 14px;
+            color: #7a7a7a
+        }
+
+        @media (max-width:800px) {
+            .steps {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media (max-width:600px) {
+            .hero {
+                padding: 28px 20px
             }
 
-            h2 {
-                font-size: 18px;
+            .content {
+                padding: 24px 20px 32px
             }
 
-            p,
-            li {
-                font-size: 15px;
+            .content p,
+            .content li {
+                font-size: 15px
             }
 
             .start-button {
                 width: 100%;
-                text-align: center;
+                text-align: center
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>JOHARI PENCERESİ TESTİ</h1>
-        <h2>Kendini Bilmek, Gerçek Güçtür.</h2>
+    <main class="container">
+        <div class="inner">
+            <!-- HERO -->
+            <section class="hero">
+                <h1>JOHARI PENCERESİ TESTİ</h1>
+                <p class="quote">“Dışarıya bakan rüya görür; içeriye bakan uyanır.” — <strong>C. G. Jung</strong></p>
+            </section>
 
-        <p><strong>Johari Penceresi</strong>, yalnızca psikoloji literatüründe değil; liderlik, iletişim, kişisel
-            gelişim ve öz-farkındalık alanlarında çığır açan bir modeldir.</p>
+            <!-- CONTENT -->
+            <section class="content">
+                <p><strong>Johari Penceresi</strong>, öz‑farkındalık ve iletişim becerilerini ölçen klasik bir modeldir.
+                    Bu test, senin kendini nasıl gördüğün ile çevrenin seni nasıl algıladığını yan yana koyar;
+                    <em>açık</em>, <em>kör</em>, <em>gizli</em> ve <em>bilinmeyen</em> alanlarının dengesini net bir
+                    şekilde gösterir.
+                </p>
 
-        <p>Bu test, bir kişinin kendine dair farkındalığını artırmak, başkalarının gözündeki yansımasıyla yüzleşmek ve
-            bilinmeyen potansiyel alanları keşfetmek üzere tasarlanmıştır.</p>
+                <h3>Bu test sana ne kazandırır?</h3>
+                <ul>
+                    <li>Güçlü yönlerini ve geliştirme alanlarını <strong>somut verilerle</strong> görmeni sağlar.</li>
+                    <li>“Ben” algın ile çevrenin algısı arasındaki farkları <strong>harita gibi</strong> ortaya çıkarır.
+                    </li>
+                    <li>Takım içi iletişimde <strong>şeffaflık ve güven</strong> oluşturman için net ipuçları sunar.
+                    </li>
+                </ul>
 
-        <blockquote>"Kendini bilmek, başkalarını anlamanın anahtardır."</blockquote>
+                <h3>Nasıl ilerler?</h3>
+                <div class="steps">
+                    <div class="step"><b>1. Adım:</b> Kısa bir formu doldurursun (10-15 dk).</div>
+                    <div class="step"><b>2. Adım:</b> Sistem sonuçlarını 48×48’lik Johari penceresinde görselleştirir.
+                    </div>
+                    <div class="step"><b>3. Adım:</b> Sonuçlarınla uyumlu, <b>kişiselleştirilmiş</b> öneriler ve
+                        istersen “Zafer Bey’in Hikâyesi” ilham bölümü.</div>
+                </div>
 
-        <h2>Gerçek Hikâyelerden İlham</h2>
-        <p>Mehmet, sessiz bir öğrenciydi. Ama Johari Penceresi testi sonrasında çevresinden gelen geribildirimlerle
-            yaratıcı ve çözüm odaklı yönlerinin farkına vardı. Bu test, onun için bir dönüşümdü.</p>
+                <div class="privacy">
+                    <b>Gizlilik notu:</b> Sonuç dosyaları herkese açık değildir; yalnızca senin oturumunda görüntülenir.
+                </div>
 
-        <h2>Bu Test Senin İçin Ne Sağlar?</h2>
-        <ul>
-            <li>Güçlü ve geliştirilmesi gereken yönlerini ayırt etmeni sağlar.</li>
-            <li>Kendine dair farkındalığını derinleştirir.</li>
-            <li>İletilerde algı farklılıklarını ortaya çıkarır.</li>
-        </ul>
+                <img src="{{ url_for('static', filename='webimiz/johari-penceresi.png') }}" alt="Johari Penceresi"
+                    class="johari-gorsel" />
 
-        <h2>Cesaret Ediyor Musun?</h2>
-        <p>Sonunda seni 4 bölgeli bir <strong>psikolojik pencere</strong> karşılayacak.
-            <br>Bu pencerede; açık, kör, gizli ve bilinmeyen alanlarının oranlarını öğreneceksin.
-        </p>
+                <div class="cta">
+                    <a id="startBtn" href="/index" class="start-button">TESTE BAŞLA</a>
+                    <span id="loading" class="loading">Yükleniyor…</span>
+                </div>
+            </section>
+        </div>
+    </main>
 
-        <p><strong>Gerçek bir içgörü için sadece kendin olman yeterli.</strong></p>
-
-        <img src="{{ url_for('static', filename='webimiz/johari-penceresi.png') }}" alt="Johari Penceresi"
-            class="johari-gorsel">
-
-        <a href="/index" class="start-button">TESTE BAŞLA</a>
-    </div>
+    <script>
+        // Tek tık + yükleniyor bilgisi
+        const btn = document.getElementById('startBtn');
+        const ld = document.getElementById('loading');
+        btn.addEventListener('click', (e) => {
+            if (btn.dataset.locked === '1') { e.preventDefault(); return; }
+            btn.dataset.locked = '1';
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '.9';
+            ld.style.display = 'inline';
+            setTimeout(() => { ld.textContent = 'Hazırlanıyor…'; }, 1000);
+        });
+    </script>
 </body>
 
 </html>
