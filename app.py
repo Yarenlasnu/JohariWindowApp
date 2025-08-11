@@ -11,6 +11,9 @@ from flask_mail import Mail, Message
 import requests
 from flask_session import Session
 import re
+from io import BytesIO
+from flask import send_file, abort, current_app
+
 
 # ================== UYGULAMA & OTURUM ==================
 app = Flask(__name__)
@@ -73,18 +76,63 @@ def index():
         return render_template("test.html", yapan=yapan, test_edilen=test_edilen, sorular=sorular)
     return render_template("index.html")  # mevcut sayfan varsa çalışmaya devam etsin
 
-# === GİZLİ RAPOR/EXCEL İNDİRME (Admin korumalı) ===
 @app.route("/indir/sonuclar")
 def indir_sonuc():
-    sifre = request.args.get("pass")
-    if sifre != ADMIN_PASS:
-        abort(403)  # yetkisiz
-    if not os.path.exists(EXCEL_YOLU):
-        abort(404)
-    # data/ klasöründen indirme
-    directory = os.path.dirname(EXCEL_YOLU)
-    filename = os.path.basename(EXCEL_YOLU)
-    return send_from_directory(directory=directory, path=filename, as_attachment=True)
+    admin_key = os.environ.get("ADMIN_PASS")
+    key = request.args.get("key")
+    if not admin_key or key != admin_key:
+        abort(403)
+    path = os.path.join(current_app.root_path, "data", "sonuclar.xlsx")
+    if not os.path.exists(path):
+        abort(404, description="Henüz kayıt yok.")
+    return send_file(path, as_attachment=True, download_name="johari_tum_sonuclar.xlsx")
+
+
+# === GİZLİ RAPOR/EXCEL İNDİRME (Admin korumalı) ===
+from flask import send_file, abort, current_app
+from werkzeug.utils import safe_join
+import shutil, time
+
+@app.route("/indir/benim-sonucum")
+def indir_benim_sonucum():
+    data = session.get("sonuc")
+    if not data:
+        return redirect(url_for("index"))
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Benim Sonucum"
+    ws.append([
+        "Tarih", "Yapan", "Test Edilen",
+        "A1", "A2", "G1", "G2", "Genel A", "Genel G",
+        "Açık", "Kör", "Gizli", "Bilinmeyen",
+        "Açık (%)", "Kör (%)", "Gizli (%)", "Bilinmeyen (%)"
+    ])
+
+    alanlar = data["alanlar"]
+    puanlar = data["puanlar"]
+    ws.append([
+        datetime.now().strftime("%Y-%m-%d %H:%M"),
+        data["yapan"], data["test_edilen"],
+        puanlar["A1"], puanlar["A2"], puanlar["G1"], puanlar["G2"],
+        data["genel_A"], data["genel_G"],
+        round(alanlar["acik"], 2), round(alanlar["kor"], 2),
+        round(alanlar["gizli"], 2), round(alanlar["bilinmeyen"], 2),
+        f"%{alanlar['acik_yuzde']}", f"%{alanlar['kor_yuzde']}",
+        f"%{alanlar['gizli_yuzde']}", f"%{alanlar['bilinmeyen_yuzde']}"
+    ])
+
+    stream = BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+    fname = f"johari_{data['yapan']}_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx"
+    return send_file(
+        stream,
+        as_attachment=True,
+        download_name=fname,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
 
 # === E-POSTA GÖNDERME (isteğe bağlı) ===
 @app.route("/eposta-gonder", methods=["POST"])
@@ -253,8 +301,9 @@ Yalnızca Türkçe karakterler kullan, gereksiz semboller olmasın.
 
 # ================== EXCEL KAYIT (GİZLİ KONUM) ==================
 def kaydet_excel(yapan, test_edilen, puanlar, genel_A, genel_G, alanlar):
-    # Dosya yoksa başlıkları oluştur
-    if not os.path.exists(EXCEL_YOLU):
+    os.makedirs("data", exist_ok=True)
+    dosya_yolu = os.path.join("data", "sonuclar.xlsx")
+    if not os.path.exists(dosya_yolu):
         wb = Workbook()
         ws = wb.active
         ws.title = "Sonuçlar"
@@ -264,20 +313,23 @@ def kaydet_excel(yapan, test_edilen, puanlar, genel_A, genel_G, alanlar):
             "Açık", "Kör", "Gizli", "Bilinmeyen",
             "Açık (%)", "Kör (%)", "Gizli (%)", "Bilinmeyen (%)"
         ])
-        wb.save(EXCEL_YOLU)
+    else:
+        wb = load_workbook(dosya_yolu)
+        ws = wb.active
 
-    wb = load_workbook(EXCEL_YOLU)
-    ws = wb.active
     ws.append([
         datetime.now().strftime("%Y-%m-%d %H:%M"),
         yapan, test_edilen,
         puanlar["A1"], puanlar["A2"], puanlar["G1"], puanlar["G2"],
         genel_A, genel_G,
-        round(alanlar["acik"], 4), round(alanlar["kor"], 4),
-        round(alanlar["gizli"], 4), round(alanlar["bilinmeyen"], 4),
-        alanlar['acik_yuzde'], alanlar['kor_yuzde'], alanlar['gizli_yuzde'], alanlar['bilinmeyen_yuzde']
+        round(alanlar["acik"], 2), round(alanlar["kor"], 2),
+        round(alanlar["gizli"], 2), round(alanlar["bilinmeyen"], 2),
+        f"%{alanlar['acik_yuzde']}", f"%{alanlar['kor_yuzde']}",
+        f"%{alanlar['gizli_yuzde']}", f"%{alanlar['bilinmeyen_yuzde']}"
     ])
-    wb.save(EXCEL_YOLU)
+    wb.save(dosya_yolu)
+
+
 
 # ================== MAİL ==================
 def mail_gonder(eposta, yapan, grafik_path, alanlar, yorum):
