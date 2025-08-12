@@ -15,6 +15,7 @@ from io import BytesIO
 from flask import send_file, abort, current_app
 
 
+
 # ================== UYGULAMA & OTURUM ==================
 app = Flask(__name__)
 app.secret_key = 'gizli_anahtar'
@@ -48,6 +49,141 @@ def slugify(txt):
     txt = re.sub(r"[^\w\s-]", "", str(txt), flags=re.UNICODE).strip()
     txt = re.sub(r"[\s-]+", "_", txt)
     return txt[:40] if txt else "kisi"
+
+
+def _harfe_cevir(v):
+    if v is None:
+        return None
+    s = str(v).strip().upper()
+    if s in ("A","B","C","D"):
+        return s
+    if s in ("1","2","3","4"):
+        return {"1":"A","2":"B","3":"C","4":"D"}[s]
+    return None  # tanınmayan değer
+from openpyxl import load_workbook
+from io import BytesIO
+from flask import send_file, abort, current_app, flash
+
+def _exceli_oku_ve_hesapla(file_storage):
+    """
+    Beklenen başlıklar: Yapan, Test Edilen, S1 .. S48
+    Cevaplar A/B/C/D ya da 1/2/3/4 olabilir.
+    Dönüş: (sonuclar_listesi, hatalar_listesi)
+    """
+    wb = load_workbook(filename=file_storage, data_only=True)
+    ws = wb.active
+
+    # Başlık satırı
+    headers = [ (c.value or "").strip() if isinstance(c.value,str) else c.value for c in ws[1] ]
+    # Esnek: Türkçe büyük/küçük harf farkını yumuşat
+    h_lower = [ (h or "").lower() for h in headers ]
+
+    def _idx(name):
+        name_l = name.lower()
+        if name_l in h_lower:
+            return h_lower.index(name_l)
+        return None
+
+    yapan_idx = _idx("yapan")
+    edilen_idx = _idx("test edilen")
+    # S1..S48 sütunları
+    s_idx = []
+    for i in range(1,49):
+        key = f"s{i}"
+        j = _idx(key)
+        if j is None:
+            # Büyük harfe duyarsız ara: S1 / s1
+            try:
+                j = [x.lower() for x in headers].index(key)
+            except ValueError:
+                j = None
+        s_idx.append(j)
+
+    hatalar = []
+    sonuclar = []
+    if yapan_idx is None or edilen_idx is None or any(j is None for j in s_idx):
+        hatalar.append("Başlıklar eksik. 'Yapan', 'Test Edilen', 'S1'..'S48' olmalı.")
+        return [], hatalar
+
+    # Satırları işle
+    for row_idx in range(2, ws.max_row + 1):
+        yapan = ws.cell(row=row_idx, column=yapan_idx+1).value
+        edilen = ws.cell(row=row_idx, column=edilen_idx+1).value
+        if not yapan and not edilen:
+            continue  # boş satır
+
+        # 48 cevap topla
+        cevaplar = {}
+        eksik = []
+        for i in range(1,49):
+            col = s_idx[i-1] + 1
+            ham = ws.cell(row=row_idx, column=col).value
+            harf = _harfe_cevir(ham)
+            if not harf:
+                eksik.append(i)
+            else:
+                cevaplar[f"soru{i}"] = harf
+
+        if eksik:
+            hatalar.append(f"{row_idx}. satırda eksik/yanlış cevaplar: {', '.join(map(str, eksik))}")
+            continue
+
+        # Mevcut puanlama ve alan hesaplarını kullan
+        puanlar, genel_A, genel_G = puan_hesapla(cevaplar)
+        alanlar = hesapla_johari_alanlari(puanlar)
+
+        sonuclar.append({
+            "yapan": str(yapan or "").strip(),
+            "test_edilen": str(edilen or "").strip(),
+            "puanlar": puanlar,
+            "genel_A": genel_A,
+            "genel_G": genel_G,
+            "alanlar": alanlar
+        })
+    return sonuclar, hatalar
+@app.route("/excel-yukle", methods=["GET","POST"], endpoint="excel_yukle")
+def excel_yukle():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Cevaplar"
+    headers = ["Yapan", "Test Edilen"] + [f"S{i}" for i in range(1,49)]
+    ws.append(headers)
+    # örnek satır
+    ws.append(["Ali", "Veli"] + ["A"]*48)
+    bio = BytesIO()
+    wb.save(bio); bio.seek(0)
+    return send_file(bio, as_attachment=True, download_name="johari_sablon.xlsx",
+                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+from werkzeug.utils import secure_filename
+
+@app.route("/excel-yukle", methods=["GET","POST"])
+def excel_yukle():
+    if request.method == "GET":
+        return render_template("excel_yukle.html")
+
+    f = request.files.get("dosya")
+    if not f or not f.filename.lower().endswith(".xlsx"):
+        flash("Lütfen .xlsx uzantılı Excel dosyası yükleyin.", "error")
+        return redirect(url_for("excel_yukle"))
+
+    # Dosyayı bellekten oku
+    try:
+        sonuclar, hatalar = _exceli_oku_ve_hesapla(f)
+    except Exception as e:
+        flash(f"Dosya okunamadı: {e}", "error")
+        return redirect(url_for("excel_yukle"))
+
+    if hatalar:
+        for h in hatalar:
+            flash(h, "error")
+        if not sonuclar:
+            return redirect(url_for("excel_yukle"))
+
+    # Yalnızca BU oturumda görünür
+    session["excel_sonuc_list"] = sonuclar
+    return redirect(url_for("excel_sonuc"))
+
 
 # ================== ROUTELAR ==================
 @app.route("/")

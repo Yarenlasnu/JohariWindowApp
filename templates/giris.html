@@ -201,7 +201,7 @@
             margin: 22px 0 8px;
         }
 
-        /* CTA: centered + micro‑interactions */
+        /* CTA: centered + micro-interactions */
         .cta {
             display: flex;
             gap: 12px;
@@ -284,6 +284,25 @@
             color: #7a7a7a
         }
 
+        /* === Excel kutusu (eklenen kısım) === */
+        .excel-box {
+            margin-top: 20px;
+            border: 1px solid #ece7f5;
+            background: #faf7ff;
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+        .excel-box h3 { margin: 0 0 8px; color: #4a148c; font-size: 18px; }
+        .excel-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; justify-content: center; }
+        .start-button.alt { background: linear-gradient(90deg, #6d2da6, #5b1a8f); }
+        .ghost-button {
+            display: inline-block; padding: 12px 18px; border-radius: 12px;
+            border: 1px solid #d8c8ef; color: #6a1b9a; background: #fff;
+            font-weight: 600; text-decoration: none;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .ghost-button:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+
         @media (max-width:800px) {
             .steps {
                 grid-template-columns: 1fr
@@ -323,7 +342,7 @@
 
             <!-- CONTENT -->
             <section class="content">
-                <p><strong>Johari Penceresi</strong>, öz‑farkındalık ve iletişim becerilerini ölçen klasik bir modeldir.
+                <p><strong>Johari Penceresi</strong>, öz-farkındalık ve iletişim becerilerini ölçen klasik bir modeldir.
                     Bu test, senin kendini nasıl gördüğün ile çevrenin seni nasıl algıladığını yan yana koyar;
                     <em>açık</em>, <em>kör</em>, <em>gizli</em> ve <em>bilinmeyen</em> alanlarının dengesini net bir
                     şekilde gösterir.
@@ -357,6 +376,16 @@
                 <div class="cta">
                     <a id="startBtn" href="/index" class="start-button">TESTE BAŞLA</a>
                     <span id="loading" class="loading">Yükleniyor…</span>
+                </div>
+
+                <!-- Excel'den hesaplama kutusu (START'ın ALTINDA) -->
+                <div class="excel-box">
+                    <h3>Excel’den Toplu Hesaplama</h3>
+                    <p>Elinizde cevaplar (A/B/C/D veya 1/2/3/4) olan bir Excel varsa, yükleyin; herkes için Açık, Kör, Gizli ve Bilinmeyen alanlarını anında hesaplayalım. Yüklenen sonuçlar yalnızca bu oturumda görünür.</p>
+                    <div class="excel-actions">
+                        <a href="{{ url_for('excel_yukle') }}" class="start-button alt">Excel’den Hesapla</a>
+                        <a href="{{ url_for('excel_sablon') }}" class="ghost-button">Şablonu İndir</a>
+                    </div>
                 </div>
             </section>
         </div>
