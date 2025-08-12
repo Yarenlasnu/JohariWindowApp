@@ -366,10 +366,11 @@
                     <div class="hint" style="margin-top:6px">İpucu: PDF yazdır seçeneğiyle bu sayfayı doğrudan PDF
                         olarak kaydedebilirsin.</div>
 
-                    <details class="story" open>
+                    <!-- SADECE BURASI DEĞİŞTİ: open kaldırıldı ve id eklendi -->
+                    <details class="story" id="hikayeBox">
                         <summary>📖 Zafer Bey’in Hikayesi</summary>
 
-                        <!-- Başta gizle; JS düzgün paragraflara dönüştürüp gösterecek -->
+                        <!-- Başta gizli; JS ilk açılışta paragraflara dönüştürüp gösterecek -->
                         <div class="ai" id="hikayeMetni" style="margin-top:10px; display:none;">
                             <h3 style="margin:0 0 8px">Bilinenden Bilinmeyene: Küçük Bir Dönüşüm</h3>
                             Zafer beyin hikayesi : Zafer Bey’in farklı bir kütüphaneci olacağı henüz üniversitede
@@ -440,32 +441,37 @@
 
                     <script>
                         (function () {
+                            // Sadece ilk kez açıldığında metni işle ve göster
+                            const box = document.getElementById('hikayeBox');
                             const el = document.getElementById('hikayeMetni');
 
-                            // 1) Ham metni al
-                            let raw = el.textContent || "";
+                            function hydrateOnce() {
+                                if (el.dataset.hydrated === '1') { el.style.display = ''; return; }
 
-                            // 2) Satır sonlarını normalize et (Windows/macOS/Linux)
-                            raw = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                                let raw = el.textContent || "";
+                                raw = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-                            // 3) Çift (veya daha fazla) satır sonunu paragraf ayırıcı say;
-                            //    paragrafların içindeki tekli satır sonlarını boşluğa çevir.
-                            const paras = raw
-                                .split(/\n{2,}/)              // paragraflara böl
-                                .map(p => p.replace(/\n+/g, ' ').trim()) // tekli newline -> boşluk
-                                .filter(Boolean);
+                                const paras = raw
+                                    .split(/\n{2,}/)
+                                    .map(p => p.replace(/\n+/g, ' ').trim())
+                                    .filter(Boolean);
 
-                            // 4) Güvenli şekilde HTML’leştir (XSS’den kaçınmak için basit kaçış)
-                            const esc = s => s
-                                .replace(/&/g, '&amp;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;');
+                                const esc = s => s
+                                    .replace(/&/g, '&amp;')
+                                    .replace(/</g, '&lt;')
+                                    .replace(/>/g, '&gt;');
 
-                            // 5) Paragrafları DOM’a yaz
-                            el.innerHTML = paras.map(p => `<p style="margin:0 0 12px; line-height:1.7; text-align:justify; text-justify:inter-word;">${esc(p)}</p>`).join('');
+                                el.innerHTML = paras
+                                    .map(p => `<p style="margin:0 0 12px; line-height:1.7; text-align:justify; text-justify:inter-word;">${esc(p)}</p>`)
+                                    .join('');
 
-                            // 6) Göster
-                            el.style.display = '';
+                                el.dataset.hydrated = '1';
+                                el.style.display = '';
+                            }
+
+                            box.addEventListener('toggle', () => {
+                                if (box.open) hydrateOnce();
+                            });
                         })();
                     </script>
 
@@ -519,8 +525,9 @@
 
                     <div class="ai" style="margin-top:14px">
                         <h3 style="margin:0 0 8px">SONUÇ YORUMU </h3>
-                        <h5 style="margin:0 0 8px">Bu yorumlar sadece sonuca özel bir analizdir, kişisel bir tahmindir. </h3>
-                        <div style="white-space:pre-wrap; line-height:1.65">{{ yorum }}</div>
+                        <h5 style="margin:0 0 8px">Bu yorumlar sadece sonuca özel bir analizdir, kişisel bir tahmindir.
+                            </h3>
+                            <div style="white-space:pre-wrap; line-height:1.65">{{ yorum }}</div>
                     </div>
                 </div>
             </div>

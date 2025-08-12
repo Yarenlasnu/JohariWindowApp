@@ -141,23 +141,27 @@ def _exceli_oku_ve_hesapla(file_storage):
             "alanlar": alanlar
         })
     return sonuclar, hatalar
-@app.route("/excel-yukle", methods=["GET","POST"], endpoint="excel_yukle")
-def excel_yukle():
+# --- Excel şablonu indirme (DOĞRU: /excel-sablon) ---
+@app.route("/excel-sablon", endpoint="excel_sablon")
+def excel_sablon():
     wb = Workbook()
     ws = wb.active
     ws.title = "Cevaplar"
-    headers = ["Yapan", "Test Edilen"] + [f"S{i}" for i in range(1,49)]
+    headers = ["Yapan", "Test Edilen"] + [f"S{i}" for i in range(1, 49)]
     ws.append(headers)
     # örnek satır
-    ws.append(["Ali", "Veli"] + ["A"]*48)
+    ws.append(["Ali", "Veli"] + ["A"] * 48)
     bio = BytesIO()
-    wb.save(bio); bio.seek(0)
-    return send_file(bio, as_attachment=True, download_name="johari_sablon.xlsx",
-                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-from werkzeug.utils import secure_filename
-
-@app.route("/excel-yukle", methods=["GET","POST"])
+    wb.save(bio)
+    bio.seek(0)
+    return send_file(
+        bio,
+        as_attachment=True,
+        download_name="johari_sablon.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+# --- Excel yükleme ve hesaplama (DOĞRU: /excel-yukle) ---
+@app.route("/excel-yukle", methods=["GET", "POST"], endpoint="excel_yukle")
 def excel_yukle():
     if request.method == "GET":
         return render_template("excel_yukle.html")
@@ -167,7 +171,6 @@ def excel_yukle():
         flash("Lütfen .xlsx uzantılı Excel dosyası yükleyin.", "error")
         return redirect(url_for("excel_yukle"))
 
-    # Dosyayı bellekten oku
     try:
         sonuclar, hatalar = _exceli_oku_ve_hesapla(f)
     except Exception as e:
@@ -180,9 +183,52 @@ def excel_yukle():
         if not sonuclar:
             return redirect(url_for("excel_yukle"))
 
-    # Yalnızca BU oturumda görünür
-    session["excel_sonuc_list"] = sonuclar
+    session["excel_sonuc_list"] = sonuclar  # sadece bu oturumda
     return redirect(url_for("excel_sonuc"))
+
+@app.route("/excel-sonuc", endpoint="excel_sonuc")
+def excel_sonuc():
+    lst = session.get("excel_sonuc_list")
+    if not lst:
+        flash("Önce bir Excel yükleyin.", "error")
+        return redirect(url_for("excel_yukle"))
+    # Bu sayfayı gösterecek basit bir tablo şablonun yoksa,
+    # geçici olarak JSON gibi gösterebiliriz:
+    # return {"sonuclar": lst}
+    return render_template("excel_sonuc.html", liste=lst)
+
+@app.route("/excel-sonuc-indir", endpoint="excel_sonuc_indir")
+def excel_sonuc_indir():
+    lst = session.get("excel_sonuc_list")
+    if not lst:
+        abort(404)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Sonuçlar"
+    ws.append([
+        "Yapan", "Test Edilen",
+        "Genel A", "Genel G",
+        "Açık %", "Kör %", "Gizli %", "Bilinmeyen %"
+    ])
+
+    for r in lst:
+        alan = r["alanlar"]
+        ws.append([
+            r["yapan"], r["test_edilen"],
+            r["genel_A"], r["genel_G"],
+            alan["acik_yuzde"], alan["kor_yuzde"],
+            alan["gizli_yuzde"], alan["bilinmeyen_yuzde"]
+        ])
+
+    bio = BytesIO()
+    wb.save(bio); bio.seek(0)
+    return send_file(
+        bio,
+        as_attachment=True,
+        download_name="johari_excel_sonuc.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 
 # ================== ROUTELAR ==================
@@ -323,49 +369,78 @@ def sonuc_get():
     if not data:
         return redirect(url_for("index"))
     return render_template("sonuc.html", **data)
+@app.route("/__selftest")
+def __selftest():
+    # Senin verdiğin 1..48 cevap sırası:
+    harfler = ["C","B","A","C","D","B","A","D","D","D","A","B","D","C","A","B","A","C","A","D","D","C","C","C","D","B","A","D","C","C","D","D","D","C","A","B","D","D","B","C","B","D","B","D","D","C","D","C"]
+    cevaplar = {f"soru{i+1}": harfler[i] for i in range(48)}
+
+    puanlar, A, G = puan_hesapla(cevaplar)
+    alan = hesapla_johari_alanlari(puanlar)
+    return {
+        "gruplanan_puanlar": puanlar,  # A1, A2, G1, G2
+        "A": A, "G": G,
+        "yuzdeler": {
+            "acik": alan["acik_yuzde"],
+            "kor": alan["kor_yuzde"],
+            "gizli": alan["gizli_yuzde"],
+            "bilinmeyen": alan["bilinmeyen_yuzde"],
+        }
+    }
 
 # ================== SKORLAMA ==================
 def puan_hesapla(cevaplar):
-    G1 = [1,4,6,14,16,24,26,34,36,40,46,47]
-    G2 = [3,9,12,18,21,28,30,31,37,41,44]
-    A1 = [2,5,7,13,17,19,23,25,27,29,32,35]
-    A2 = [8,10,11,15,20,22,33,38,42,43,45,48]
+    # Madde grupları — 39 G2'de
+    G1 = [1, 4, 6, 14, 16, 24, 26, 34, 36, 40, 46, 47]
+    G2 = [3, 9, 12, 18, 21, 28, 30, 31, 37, 39, 41, 44]
+    A1 = [2, 5, 7, 13, 17, 19, 23, 25, 27, 29, 32, 35]
+    A2 = [8, 10, 11, 15, 20, 22, 33, 38, 42, 43, 45, 48]
 
-    harf_puanlari = {"A": 1, "B": 2, "C": 3, "D": 4}
+    # Excel ölçeği
+    harf_puanlari = {"A": 4, "B": 3, "C": 2, "D": 1}
+
     puanlar = {"G1": 0, "G2": 0, "A1": 0, "A2": 0}
 
     for key, secenek in cevaplar.items():
-        soru_no = int(key.replace("soru", ""))
-        for grup, liste in [("G1", G1), ("G2", G2), ("A1", A1), ("A2", A2)]:
-            if soru_no in liste:
-                puanlar[grup] += harf_puanlari.get(secenek, 0)
+        sn = int(key.replace("soru", ""))
+        val = harf_puanlari.get(str(secenek).upper(), 0)
 
+        if sn in G1:
+            puanlar["G1"] += val
+        elif sn in G2:            # G2 ters
+            puanlar["G2"] += (5 - val)
+        elif sn in A1:
+            puanlar["A1"] += val
+        elif sn in A2:            # A2 ters
+            puanlar["A2"] += (5 - val)
+
+    # A ve G Excel'deki gibi 0..48 aralığında
     genel_A = round((puanlar["A1"] + puanlar["A2"]) / 2, 2)
     genel_G = round((puanlar["G1"] + puanlar["G2"]) / 2, 2)
     return puanlar, genel_A, genel_G
 
-def hesapla_johari_alanlari(puanlar):
-    # 48x48 grid’e yerleştiriyoruz
-    A = (puanlar["A1"] + puanlar["A2"]) / 2
-    G = (puanlar["G1"] + puanlar["G2"]) / 2
 
+def hesapla_johari_alanlari(puanlar):
+    A = (puanlar["A1"] + puanlar["A2"]) / 2  # 0..48
+    G = (puanlar["G1"] + puanlar["G2"]) / 2  # 0..48
+
+    # 48^2 = 2304 -> Excel formülü birebir
     alan_acik = (G * A) / 2304
     alan_kor = ((48 - G) * A) / 2304
     alan_gizli = (G * (48 - A)) / 2304
     alan_bilinmeyen = ((48 - G) * (48 - A)) / 2304
 
     return {
-        "acik": alan_acik,
-        "kor": alan_kor,
-        "gizli": alan_gizli,
-        "bilinmeyen": alan_bilinmeyen,
+        "acik": alan_acik, "kor": alan_kor, "gizli": alan_gizli, "bilinmeyen": alan_bilinmeyen,
         "acik_yuzde": round(alan_acik * 100, 2),
         "kor_yuzde": round(alan_kor * 100, 2),
         "gizli_yuzde": round(alan_gizli * 100, 2),
         "bilinmeyen_yuzde": round(alan_bilinmeyen * 100, 2),
-        "G": G,
-        "A": A
+        "G": round(G, 2), "A": round(A, 2)
     }
+
+
+
 
 # ================== GRAFİK (ÜSTTE AÇIK & KÖR) ==================
 def ciz_grafik_duzenli(alanlar, yapan_adi):

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Excel’den Hesapla • Johari</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#2c3e50;--muted:#555;--accent:#8e24aa;--accent2:#6a1b9a;--bg1:#fdfbfb;--bg2:#ebedee;}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+         background:radial-gradient(800px 400px at 10% 10%, rgba(142,36,170,.06), transparent 60%),
+                    linear-gradient(135deg,var(--bg1),var(--bg2));
+         margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{width:min(900px,95vw);background:#fff;border-radius:18px;box-shadow:0 18px 45px rgba(30,10,60,.12);overflow:hidden}
+    .head{padding:28px 34px;border-bottom:1px solid #eee;background:linear-gradient(120deg,#fff,#faf7ff)}
+    .head h1{margin:0;font-family:'Playfair Display',serif;font-size:28px;background:linear-gradient(90deg,#4a148c,#6a1b9a);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .body{padding:26px 34px}
+    p,li{color:var(--muted);line-height:1.65}
+    .hint{background:#faf7ff;border:1px solid #ece7f5;border-radius:12px;padding:12px 14px;margin:12px 0}
+    .flash{padding:10px 12px;border-radius:10px;margin-bottom:10px;font-weight:600}
+    .flash.error{background:#ffebee;border:1px solid #ef9a9a;color:#b71c1c}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    input[type=file]{padding:10px;border:1px solid #ddd;border-radius:10px;background:#fff}
+    .btn{display:inline-block;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700;cursor:pointer;border:none}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+    .btn.ghost{border:1px solid #d8c8ef;background:#fff;color:#6a1b9a}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <header class="head"><h1>Excel’den Toplu Hesaplama</h1></header>
+    <section class="body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for cat, msg in messages %}
+            <div class="flash {{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <p>Elinizdeki Excel’de şu başlıklar olmalı: <strong>Yapan</strong>, <strong>Test Edilen</strong>, <strong>S1</strong>…<strong>S48</strong>.<br>
+      Cevaplar <strong>A/B/C/D</strong> veya <strong>1/2/3/4</strong> olabilir.</p>
+
+      <div class="hint">Örnek dosya için <a href="{{ url_for('excel_sablon') }}">şablonu indirin</a>, cevapları girip geri yükleyin.</div>
+
+      <form method="POST" action="{{ url_for('excel_yukle') }}" enctype="multipart/form-data">
+        <div class="row">
+          <input type="file" name="dosya" accept=".xlsx" required>
+          <button class="btn primary" type="submit">Hesapla</button>
+        </div>
+      </form>
+
+      <div class="actions">
+        <a class="btn ghost" href="{{ url_for('giris') }}">← Ana Sayfaya Dön</a>
+        <a class="btn ghost" href="{{ url_for('excel_sablon') }}">Şablonu İndir</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

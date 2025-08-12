@@ -2,162 +2,347 @@
 <html lang="tr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Johari Testine Başla</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        :root {
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --accent: #7b2cbf;
+            --accent2: #9d4edd;
+            --surface: #ffffff;
+            --ring: #e9d5ff;
+            --shadow: 0 18px 45px rgba(30, 10, 60, .16);
+        }
 
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
         }
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to right, #fdfcfb, #e2d1c3);
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background:
+                radial-gradient(900px 360px at 12% -10%, rgba(123, 44, 191, .10), transparent 60%),
+                linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            justify-content: center;
+            padding: 28px;
+        }
+
+        /* Card with subtle gradient border */
+        .shell {
+            width: min(560px, 94vw);
+            padding: 1px;
+            border-radius: 22px;
+            background: linear-gradient(120deg, rgba(123, 44, 191, .45), rgba(157, 78, 221, .25), rgba(123, 44, 191, .10));
+            box-shadow: var(--shadow);
         }
 
         .container {
-            background-color: #ffffffee;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            animation: fadeIn 0.6s ease-in-out;
+            background: rgba(255, 255, 255, .96);
+            backdrop-filter: saturate(120%) blur(4px);
+            border-radius: 21px;
+            overflow: hidden;
         }
 
-        h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 20px;
+        /* Hero */
+        .hero {
+            padding: 30px 36px 16px;
+            background:
+                radial-gradient(900px 360px at 10% 0%, rgba(123, 44, 191, .08), transparent 60%),
+                linear-gradient(120deg, #fff, #faf7ff);
+            border-bottom: 1px solid #f1eff7;
         }
 
-        label {
-            display: block;
-            text-align: left;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #34495e;
+        .title {
+            margin: 0 0 6px;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 4.2vw, 36px);
+            line-height: 1.08;
+            letter-spacing: .2px;
+            background: linear-gradient(90deg, #4a148c, #7b2cbf, #4a148c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 200% 100%;
+            animation: shine 7s ease-in-out infinite;
         }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 15px;
-            margin-bottom: 20px;
-            transition: border 0.3s;
+        @keyframes shine {
+
+            0%,
+            100% {
+                background-position: 0 50%
+            }
+
+            50% {
+                background-position: 100% 50%
+            }
         }
 
-        input[type="text"]:focus {
-            border-color: #7b2cbf;
-            outline: none;
+        .sub {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
         }
 
-        .checkbox-label {
+        /* Form body */
+        .body {
+            padding: 22px 36px 28px
+        }
+
+        .group {
+            margin: 14px 0 18px
+        }
+
+        .label {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
-            margin-bottom: 20px;
             gap: 10px;
-            color: #2c3e50;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
-        input[type="checkbox"] {
-            transform: scale(1.2);
+        .field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #fff;
+            transition: box-shadow .15s ease, border-color .15s ease;
         }
 
-        #test_edilen_div {
-            transition: all 0.3s ease;
+        .field:focus-within {
+            border-color: var(--ring);
+            box-shadow: 0 0 0 4px rgba(157, 78, 221, .12)
         }
 
-        button {
+        .field input {
+            border: 0;
+            outline: 0;
+            font: inherit;
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(90deg, #7b2cbf, #9d4edd);
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 10px;
+            color: var(--ink);
+            background: transparent;
+        }
+
+        .icon {
+            width: 18px;
+            height: 18px;
+            flex: 0 0 18px;
+            opacity: .65
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0 6px;
+            color: var(--ink);
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px
+        }
+
+        .hint {
+            color: #9aa0a6;
+            font-size: 12.5px;
+            margin-top: 6px
+        }
+
+        .actions {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 18px;
+            border: 0;
+            border-radius: 14px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            box-shadow: 0 12px 28px rgba(123, 44, 191, .28);
+            transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
         }
 
-        button:hover {
-            background: linear-gradient(90deg, #6a1b9a, #8338ec);
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 32px rgba(123, 44, 191, .36);
+            filter: saturate(1.05)
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
+        .btn:disabled {
+            opacity: .7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none
+        }
 
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, .5);
+            border-top-color: #fff;
+            display: none;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin {
             to {
-                opacity: 1;
-                transform: translateY(0);
+                transform: rotate(360deg)
             }
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px;
-                border-radius: 14px;
+        .privacy {
+            background: #fff;
+            border: 1px dashed #e5e7eb;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 12.5px
+        }
+
+        @media (max-width:600px) {
+            .hero {
+                padding: 24px 20px 12px
             }
 
-            h2 {
-                font-size: 20px;
-            }
-
-            button {
-                font-size: 15px;
+            .body {
+                padding: 18px 20px 24px
             }
         }
     </style>
 </head>
 
 <body>
+    <main class="shell">
+        <section class="container">
+            <!-- Hero -->
+            <header class="hero">
+                <h1 class="title">Johari Testine Başla</h1>
 
-    <div class="container">
-        <h2>Johari Testine Hoş Geldiniz</h2>
+            </header>
 
-        <form method="POST">
-            <label for="yapan">Adınız Soyadınız (Testi Yapan):</label>
-            <input type="text" id="yapan" name="yapan" required>
+            <!-- Form -->
+            <section class="body">
+                <form method="POST" id="startForm" novalidate>
+                    <div class="group">
+                        <label class="label" for="yapan">
+                            <!-- user icon -->
+                            <svg class="icon" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
+                                    fill="currentColor" />
+                            </svg>
+                            Adınız Soyadınız (Testi Yapan)
+                        </label>
+                        <div class="field">
+                            <input type="text" id="yapan" name="yapan" placeholder="Örn. Ayşe Yılmaz"
+                                autocomplete="name" required autofocus>
+                        </div>
+                    </div>
 
-            <div class="checkbox-label">
-                <input type="checkbox" id="kendim_icin" name="kendim_icin" onchange="toggleField()">
-                <label for="kendim_icin">Kendim için yapıyorum</label>
-            </div>
+                    <div class="group">
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="kendim_icin" name="kendim_icin" onchange="toggleField()">
+                            <span>Kendim için yapıyorum</span>
+                        </label>
 
-            <div id="test_edilen_div">
-                <label for="test_edilen">Test Edilen Kişinin Adı Soyadı:</label>
-                <input type="text" id="test_edilen" name="test_edilen">
-            </div>
+                    </div>
 
-            <button type="submit">TESTE BAŞLA</button>
-        </form>
-    </div>
+                    <div id="test_edilen_div" class="group">
+                        <label class="label" for="test_edilen">
+                            <!-- target icon -->
+                            <svg class="icon" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2v2a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Zm0 6v2a2 2 0 1 1-2 2H8a4 4 0 1 0 4-4Z"
+                                    fill="currentColor" />
+                            </svg>
+                            Test Edilen Kişinin Adı Soyadı
+                        </label>
+                        <div class="field">
+                            <input type="text" id="test_edilen" name="test_edilen" placeholder="Örn. Mehmet Kaya">
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn" id="submitBtn">
+                            <span>TESTE BAŞLA</span>
+                            <span class="spinner" id="spinner"></span>
+                        </button>
+                        <div class="privacy">Gizlilik: Veri dosyaları herkese açık değildir; yalnızca bu oturumda
+                            görüntülenir.</div>
+                    </div>
+                </form>
+            </section>
+        </section>
+    </main>
 
     <script>
         function toggleField() {
-            const checkbox = document.getElementById("kendim_icin");
-            const div = document.getElementById("test_edilen_div");
-            div.style.display = checkbox.checked ? "none" : "block";
+            const cb = document.getElementById('kendim_icin');
+            const block = document.getElementById('test_edilen_div');
+            const input = document.getElementById('test_edilen');
+            if (cb.checked) {
+                block.style.display = 'none';
+                input.removeAttribute('required');
+            } else {
+                block.style.display = 'block';
+                input.setAttribute('required', 'required');
+            }
         }
-        window.onload = toggleField;
-    </script>
+        // İlk yüklemede durum
+        window.addEventListener('DOMContentLoaded', toggleField);
 
+        // Tek tık + küçük spinner
+        const form = document.getElementById('startForm');
+        const btn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+
+        form.addEventListener('submit', function (e) {
+            if (btn.dataset.locked === '1') { e.preventDefault(); return; }
+            btn.dataset.locked = '1';
+            spinner.style.display = 'inline-block';
+            btn.setAttribute('disabled', 'disabled');
+
+            // Kendim için işaretliyse; test_edilen boşsa arka uca bırakmadan otomatik dolduralım (zarif UX)
+            const cb = document.getElementById('kendim_icin');
+            if (cb.checked) {
+                const yapan = document.getElementById('yapan').value.trim();
+                const hedef = document.getElementById('test_edilen');
+                if (!hedef.value.trim()) hedef.value = yapan;
+            }
+        });
+    </script>
 </body>
 
 </html>
