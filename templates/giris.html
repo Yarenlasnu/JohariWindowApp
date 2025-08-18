@@ -352,17 +352,40 @@
                 width: 100%;
                 text-align: center
             }
+
+
         }
     </style>
 </head>
 
 <body>
     <main class="container">
-        <div class="counter-badge">
-            Ziyaretçi: <strong>{{ unique_visitors }}</strong>
-            <span class="sep">•</span>
-            Tıklama: <strong>{{ total_hits }}</strong>
-        </div>
+        <!-- Sayacın görüneceği yer (ör. hero altı) -->
+        <p class="vis-counter" aria-label="Ziyaretçi sayacı">
+            <span>{{ unique_visitors }}</span> ziyaretçi · <span>{{ total_hits }}</span> tıklama
+        </p>
+
+        <style>
+            .vis-counter {
+                margin-top: .75rem;
+                font-size: .9rem;
+                line-height: 1.4;
+                color: rgba(0, 0, 0, .45);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .vis-counter {
+                    color: rgba(255, 255, 255, .45);
+                }
+            }
+
+            /* hover’da bile abartma: */
+            .vis-counter:hover {
+                color: inherit;
+                opacity: .85;
+            }
+        </style>
+
         <style>
             .counter-badge {
                 display: inline-flex;
@@ -419,9 +442,6 @@
                     <b>Gizlilik notu:</b> Sonuç dosyaları herkese açık değildir; yalnızca senin oturumunda görüntülenir.
                 </div>
 
-                <img src="{{ url_for('static', filename='webimiz/johari-penceresi.png') }}" alt="Johari Penceresi"
-                    class="johari-gorsel" />
-
                 <div class="cta">
                     <a id="startBtn" href="/index" class="start-button">TESTE BAŞLA</a>
                     <span id="loading" class="loading">Yükleniyor…</span>
@@ -443,7 +463,7 @@
     </main>
 
     <script>
-        // Tek tık + yükleniyor bilgisi
+
         const btn = document.getElementById('startBtn');
         const ld = document.getElementById('loading');
         btn.addEventListener('click', (e) => {
