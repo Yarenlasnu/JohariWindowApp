@@ -316,7 +316,7 @@ def indir_benim_sonucum():
     )
 
 
-# === E-POSTA GÖNDERME (isteğe bağlı) ===
+
 @app.route("/eposta-gonder", methods=["POST"])
 def eposta_gonder():
     yapan = request.form.get("yapan")
@@ -332,7 +332,7 @@ def eposta_gonder():
     mail_gonder(eposta, yapan, grafik_path, alanlar, yorum)
     return redirect(url_for("sonuc_get"))
 
-# === TEST SONUCU HESAPLAMA ===
+
 @app.route("/sonuc", methods=["POST"])
 def sonuc_post():
     yapan = request.form["yapan"]
@@ -371,7 +371,7 @@ def sonuc_get():
     return render_template("sonuc.html", **data)
 @app.route("/__selftest")
 def __selftest():
-    # Senin verdiğin 1..48 cevap sırası:
+  
     harfler = ["C","B","A","C","D","B","A","D","D","D","A","B","D","C","A","B","A","C","A","D","D","C","C","C","D","B","A","D","C","C","D","D","D","C","A","B","D","D","B","C","B","D","B","D","D","C","D","C"]
     cevaplar = {f"soru{i+1}": harfler[i] for i in range(48)}
 
@@ -388,7 +388,7 @@ def __selftest():
         }
     }
 
-# ================== SKORLAMA ==================
+
 def puan_hesapla(cevaplar):
     # Madde grupları — 39 G2'de
     G1 = [1, 4, 6, 14, 16, 24, 26, 34, 36, 40, 46, 47]
@@ -442,7 +442,7 @@ def hesapla_johari_alanlari(puanlar):
 
 
 
-# ================== GRAFİK (ÜSTTE AÇIK & KÖR) ==================
+
 def ciz_grafik_duzenli(alanlar, yapan_adi):
     G = max(0, min(48, alanlar["G"]))
     A = max(0, min(48, alanlar["A"]))
@@ -453,7 +453,7 @@ def ciz_grafik_duzenli(alanlar, yapan_adi):
     ax.set_aspect("equal")
     ax.axis("off")
 
-    # Üst sıra: Açık (sol) + Kör (sağ) — y=48-A ... 48
+ 
     rects = [
         ((0, 48 - A),       G,      A,      "Açık",        alanlar['acik_yuzde']),
         ((G, 48 - A),       48 - G, A,      "Kör",         alanlar['kor_yuzde']),
@@ -480,121 +480,246 @@ def ciz_grafik_duzenli(alanlar, yapan_adi):
     plt.close(fig)
     return f"grafik/{dosya_adi}"
 
-# ================== YZ YORUM ==================
 import os, requests
 
-# app.py (üstte bunlar olsun)
 import os, requests, hashlib
 from flask import session
 
-# app.py (üstte bunlar olsun)
+
 import os, requests, hashlib
 from flask import session
+=
+import os, requests, hashlib, random, time
+from flask import session
+
+def _profil_etiketi(a, k, g, b):
+   
+    vals = {"acik": a, "kor": k, "gizli": g, "bilinmeyen": b}
+    srt = sorted(vals.items(), key=lambda x: x[1], reverse=True)
+    birinci, ikinci = srt[0][0], srt[1][0]
+    return f"{birinci}+{ikinci}", birinci, ikinci
+
+def _ton_sec(seed_int):
+    tonlar = [
+        "sakin", "analitik", "sıcak", "ilham verici",
+        "geribildirim odaklı", "çözüm odaklı", "yansıtıcı", "net ve yalın"
+    ]
+    random.seed(seed_int)
+    return random.choice(tonlar)
+
+def _ipucu_bankasi():
+   
+    return {
+        "acik": [
+            "Toplantı öncesi kısa bir bağlam notu paylaşmak, görünürlüğü doğal biçimde artırır.",
+            "Karar sonrasında iki cümlelik mini-özet, ekipte ortak anlayışı hızla pekiştirir.",
+            "Küçük başarıları görünür kılmak, güven duygusunu süreklileştirir."
+        ],
+        "kor": [
+            "İki yönlü geri bildirim ritmi kurmak, algı-niyet farkını hızla kapatır.",
+            "Varsayımları yüksek sesle dile getirmek, sürprizleri azaltır.",
+            "Ekipten örnek davranış-geribildirim örnekleri istemek, kör noktaları aydınlatır."
+        ],
+        "gizli": [
+            "Kişisel çalışma tercihlerini iki-üç net cümleyle yazmak, beklenti yönetimini kolaylaştırır.",
+            "Öncelikleri küçük notlarla paylaşmak, gereksiz gerginlikleri azaltır.",
+            "Sınırları belirginleştirmek, ilişki kalitesini hızla yükseltir."
+        ],
+        "bilinmeyen": [
+            "İki haftalık küçük pilot denemeler, yeni becerileri risksiz ortamda test etmenizi sağlar.",
+            "Bir ‘öğrenme günlüğü’ ile keşifleri görünür kılmak, ilerlemeyi hızlandırır.",
+            "Farklı rollerde kısa rotasyonlar, gizli potansiyelleri ortaya çıkarır."
+        ]
+    }
+
+def _varyasyon_ifadeleri():
+    # Dilde küçük varyasyonlar için eşanlam bankası
+    return {
+        "gosteriyor": ["gösteriyor", "işaret ediyor", "ortaya koyuyor", "resmediyor"],
+        "odak": ["odağı", "önceliği", "merkezi", "ağırlık noktası"],
+        "olabilir": ["olabilir", "mümkün", "uygun görünüyor", "yerinde olacaktır"],
+        "destekler": ["destekler", "pekiştirir", "güçlendirir", "kolaylaştırır"]
+    }
+
+def _sec(bank, rng):
+    return rng.choice(bank)
+
+def _yonlendirme_cumlesi(birinci, rng, bank):
+    # Baskın alana göre bir öneri cümlesi seç
+    harita = {
+        "acik": bank["acik"],
+        "kor": bank["kor"],
+        "gizli": bank["gizli"],
+        "bilinmeyen": bank["bilinmeyen"]
+    }
+    return _sec(harita[birinci], rng)
 
 def yapay_zeka_yorumla(yapan, test_edilen, alanlar):
-    # kişiye özel ton için tohum
-    seed_src = f"{yapan}|{test_edilen}|{alanlar['acik_yuzde']}-{alanlar['kor_yuzde']}-{alanlar['gizli_yuzde']}-{alanlar['bilinmeyen_yuzde']}|{session.get('cevap_id','')}"
+    # Tohum: kişi + skorlar + oturum cevabı + zaman tuzu (tekrarı kırmak için hafif varyasyon)
+    seed_src = (
+        f"{yapan}|{test_edilen}|"
+        f"{alanlar['acik_yuzde']}-{alanlar['kor_yuzde']}-"
+        f"{alanlar['gizli_yuzde']}-{alanlar['bilinmeyen_yuzde']}|"
+        f"{session.get('cevap_id','')}|{int(time.time())//120}"  # her ~2 dakikada bir farklılaşsın
+    )
     seed_int = int(hashlib.sha256(seed_src.encode('utf-8')).hexdigest(), 16)
-    tonlar = ["sakin", "analitik", "sıcak", "ilham verici"]
-    ton = tonlar[seed_int % len(tonlar)]
+    rng = random.Random(seed_int)
 
-    a = alanlar['acik_yuzde']; k = alanlar['kor_yuzde']; g = alanlar['gizli_yuzde']; b = alanlar['bilinmeyen_yuzde']
+    ton = _ton_sec(seed_int)
+    a = float(alanlar['acik_yuzde'])
+    k = float(alanlar['kor_yuzde'])
+    g = float(alanlar['gizli_yuzde'])
+    b = float(alanlar['bilinmeyen_yuzde'])
+
+    profil, birinci, ikinci = _profil_etiketi(a, k, g, b)
+    vary = _varyasyon_ifadeleri()
+    ipuclar = _ipucu_bankasi()
+
+    # Profil bazlı vurgu cümleleri
+    profil_cumleleri = {
+        "acik+kor": "Geniş bir görünürlükle birlikte zaman zaman algı-niyet farkları ortaya çıkabiliyor.",
+        "acik+gizli": "Paylaşım yüksek; ancak kişisel tercihlerin bir kısmı içeride tutuluyor.",
+        "acik+bilinmeyen": "Görünürlük iyi; keşif alanında hâlâ büyüme potansiyeli var.",
+        "kor+acik": "Algı farklılıkları belirgin; yine de görünürlük zemini güçlü.",
+        "kor+gizli": "Hem beklentiler hem de algılar kapalı kalmaya meyilli; güvenli alanlar kurmak önemli.",
+        "kor+bilinmeyen": "Geribildirimin sınırlı kaldığı ve keşfin düşük olduğu bir görüntü var.",
+        "gizli+acik": "İletişim iyi; ancak kişisel sınırlar ve tercihlerin görünürlüğü artabilir.",
+        "gizli+kor": "Paylaşım kısıtlı; algı farkı riski yükseliyor.",
+        "gizli+bilinmeyen": "İçe dönük kalma eğilimi ile belirsiz alan birlikte ilerliyor.",
+        "bilinmeyen+acik": "Görünürlük sağlam; keşfe ayrılacak küçük adımlar hızlı fayda getirebilir.",
+        "bilinmeyen+kor": "Geribildirim ve deney alanı ikisi de sınırlı; ritim yaratmak kritik.",
+        "bilinmeyen+gizli": "Keşif ve paylaşım düşük; küçük, güvenli denemelerle başlamak en doğrusu."
+    }
+    ana_mesaj = profil_cumleleri.get(f"{birinci}+{ikinci}", "Dört alanın dengesi kişiye özel bir harita ortaya koyuyor.")
+
+    # Online API için daha kişiselleştirilmiş, profil tabanlı talimat
     prompt = f"""
-Johari sonucu (Türkçe, serbest metin):
-Yapan: {yapan}
-Test edilen: {test_edilen}
-Açık %{a}, Kör %{k}, Gizli %{g}, Bilinmeyen %{b}
+Johari sonucu (Türkçe, serbest metin, {ton} ton):
+Kişi: {test_edilen}
+Oranlar: Açık %{a:.2f}, Kör %{k:.2f}, Gizli %{g:.2f}, Bilinmeyen %{b:.2f}
+Profil: {profil} (baskın: {birinci}, ikincil: {ikinci})
 
-Rolün: {ton} bir danışman gibi yaz.
-Biçim: Serbest anlatı; en fazla 2 veya 3 paragraf; başlık, madde işareti, numara yok.
-İçerik: Oranları birlikte yorumla; güçlü ve gelişime açık noktaları doğal akışta işle.
-Açık alanı büyütme ve kör alanı azaltma fikirlerini metnin içine yedir; ayrı liste yapma.
-Yaklaşık 180–260 kelime yaz; klişeden kaçın; tekrar etme.
-Yalnızca Türkçe harfler ve standart noktalama kullan; emoji veya özel sembol kullanma.
+Görev:
+- 2 veya 3 paragraf yaz.
+- Başlık, madde işareti, emoji yok.
+- İlk paragrafta tabloyu {rng.choice(vary['gosteriyor'])}; ikinci paragrafta eylem önerilerini doğal akışta yedir.
+- Öneriler profil ile tutarlı olsun: '{birinci}' ve '{ikinci}' alanlarına odaklan.
+- Küçük ama uygulanabilir adımlar öner (kural: bağlam notu/varsayım görünür kılma/mini pilot/öğrenme günlüğü gibi).
+- Dili sade, akıcı; klişe kaçın.
+- 180–260 kelime aralığı.
+
+Bağlam cümlesi: {ana_mesaj}
 """
 
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
-    if not api_key:
-        return _yerel_serbest_yorum(test_edilen, a, k, g, b, ton)
-
-    base_url = os.environ.get("OPENROUTER_URL", "https://openrouter.ai/api/v1")
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": os.environ.get("OR_REFERER", "https://example.com"),
-        "X-Title": "Johari Test Platformu"
-    }
-    primary = os.environ.get("OPENROUTER_MODEL", "openrouter/auto")
-    candidates = [primary,
-                  "mistralai/mistral-small:free",
-                  "mistralai/mistral-nemo:free",
-                  "qwen/qwen2.5-7b-instruct:free",
-                  "meta-llama/llama-3.1-8b-instruct:free"]
-
-    def payload(model):
-        return {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": "Profesyonel, akıcı, kişiye özel ve tekrarsız Türkçe anlatı yaz."},
-                {"role": "user", "content": prompt}
-            ],
-            "max_tokens": 900,
-            "temperature": 0.95,
-            "top_p": 0.9,
-            "presence_penalty": 0.4,
-            "frequency_penalty": 0.35
+    if api_key:
+        base_url = os.environ.get("OPENROUTER_URL", "https://openrouter.ai/api/v1")
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": os.environ.get("OR_REFERER", "https://example.com"),
+            "X-Title": "Johari Test Platformu"
         }
+        # Birkaç model + farklı sıcaklıklarla deneyerek çeşitlilik arttır
+        candidates = [
+            ("openrouter/auto", 0.95, 0.9),
+            ("mistralai/mistral-small:free", 1.05, 0.92),
+            ("mistralai/mistral-nemo:free", 1.0, 0.95),
+            ("qwen/qwen2.5-7b-instruct:free", 1.1, 0.9),
+            ("meta-llama/llama-3.1-8b-instruct:free", 1.05, 0.9),
+        ]
 
-    for m in candidates:
-        try:
-            r = requests.post(f"{base_url}/chat/completions", headers=headers, json=payload(m), timeout=25)
-            if r.status_code == 200:
-                txt = (r.json().get("choices") or [{}])[0].get("message", {}).get("content", "") or ""
-                words = len(txt.split())
-                if words >= 160:  # alt sınır; çok kısaysa yedek dene
-                    return txt.strip()
-        except Exception:
-            continue
+        rng.shuffle(candidates)  # her çağrıda farklı sıralama
+        for model, temp, topp in candidates:
+            try:
+                r = requests.post(
+                    f"{base_url}/chat/completions",
+                    headers=headers,
+                    json={
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": "Profesyonel, doğal, kişiye özgü Türkçe anlatı yaz. Tekrar ve şablondan kaçın."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        "max_tokens": 900,
+                        "temperature": float(temp),
+                        "top_p": float(topp),
+                        "presence_penalty": 0.55,
+                        "frequency_penalty": 0.45
+                    },
+                    timeout=25
+                )
+                if r.status_code == 200:
+                    txt = (r.json().get("choices") or [{}])[0].get("message", {}).get("content", "") or ""
+                    # Tekrarlayan çıktıyı kır: öncekiyle aynıysa küçük bir tuz ekleyip yeniden dener
+                    last_hash = session.get("last_comment_hash")
+                    cur_hash = hashlib.md5(txt.encode("utf-8")).hexdigest()
+                    if last_hash and last_hash == cur_hash:
+                        prompt += f"\nNot: Aynı ifadelerden kaçın; farklı metafor ve cümle yapıları kullan."
+                        continue
+                    session["last_comment_hash"] = cur_hash
+                    if len(txt.split()) >= 160:
+                        return txt.strip()
+            except Exception:
+                continue
 
-    return _yerel_serbest_yorum(test_edilen, a, k, g, b, ton)
+    # Offline (API yoksa) – profil ve seed tabanlı yerel üretim
+    return _yerel_serbest_yorum(test_edilen, a, k, g, b, ton, profil, rng, vary, ipuclar)
 
+def _yerel_serbest_yorum(ad, a, k, g, b, ton, profil=None, rng=None, vary=None, ipuclar=None):
+    # Seed’li çeşitlilik: eşanlam + profil odaklı cümleler + ipuçları
+    if rng is None:
+        rng = random.Random(int(hashlib.md5(f"{ad}-{a}-{k}-{g}-{b}".encode()).hexdigest(), 16))
+    vary = vary or _varyasyon_ifadeleri()
+    ipuclar = ipuclar or _ipucu_bankasi()
 
-def _yerel_serbest_yorum(ad, a, k, g, b, ton):
-    # Serbest, 2–3 paragraflık offline anlatım (başlık/madde yok)
-    def s(x):
-        if x >= 40: return "çok yüksek"
-        if x >= 28: return "yüksek"
-        if x >= 18: return "orta"
-        return "düşük"
+    # Basit seviye metrikleri
+    def seviye(x):
+        return "çok yüksek" if x >= 40 else "yüksek" if x >= 28 else "orta" if x >= 18 else "düşük"
 
-    p1 = (f"{ad} için çıkan tablo, güçlü yanları ile gelişime açık alanların yan yana durduğunu gösteriyor. "
-          f"Açık alanın {s(a)} düzeyde olması, niyetin ve çalışma tarzının çoğunlukla anlaşılır olduğunu düşündürüyor; "
-          f"bu da güveni ve işbirliğini destekler. Buna karşılık kör alanın {s(k)} görünmesi, bazı etkilerin niyet ile "
-          f"tam örtüşmediği anlara işaret ediyor. Gizli alanın {s(g)} olması, uygun bağlam verildiğinde ilişkilerin daha da "
-          f"rahatlayabileceğini düşündürürken, bilinmeyen alanın {s(b)} düzeyi küçük denemelerle yeni beceriler "
-          f"kazanılabileceğini ima ediyor.")
+    # Baskın alan
+    vals = {"acik": a, "kor": k, "gizli": g, "bilinmeyen": b}
+    birinci = max(vals, key=vals.get)
+    ikinci = max({k:v for k,v in vals.items() if k != birinci}, key=lambda z: vals[z])
 
-    p2 = (f"Bu resimde odak, açık alanı bilinçli paylaşım ile büyütmek ve kör alanı geri bildirim akışıyla daraltmak olabilir. "
-          f"Toplantı öncesi kısa bir özet paylaşmak, alınan kararlarda varsayımları görünür kılar; itiraz ya da farklı görüş "
-          f"geldiğinde önce gerekçeyi merakla duymak etkili olur. Gün sonunda iki cümlelik notlar, hangi davranışın nasıl bir "
-          f"etki yarattığını hatırlatır. Kişisel sınırlar ve beklentiler birkaç net cümleyle yazıldığında gizli alan rahatlar; "
-          f"iki haftalık küçük bir pilot uygulama ise bilinmeyeni güvenli bir alanda keşfetmenin en pratik yoludur.")
+    giris = (
+        f"{ad} için ortaya çıkan tablo, güçlü yanlarla gelişime açık noktaların birlikte "
+        f"{rng.choice(vary['gosteriyor'])}. Açık alanın {seviye(a)} düzeyi, niyet ve çalışma tarzının "
+        f"çoğunlukla anlaşılır olduğunu düşündürür; bu durum ekip içi güveni {rng.choice(vary['destekler'])}. "
+        f"Buna karşılık kör alanın {seviye(k)} görünmesi, algı ile niyetin zaman zaman farklılaşabildiğine işaret eder. "
+        f"Gizli alanın {seviye(g)} olması, uygun bağlam sağlandığında ilişkilerin daha rahat akabileceğini; "
+        f"bilinmeyen alanın {seviye(b)} düzeyi ise küçük denemelerin yeni becerileri hızla görünür kılabileceğini {rng.choice(vary['gosteriyor'])}."
+    )
 
-    p3 = (f"Zaman içinde düzenli geri bildirim ile birlikte bu dört alanın dengesi değişir; açık alan büyüdükçe iletişim doğal "
-          f"olarak sadeleşir ve karar süreçleri hızlanır. {ad} için öneri, hız yerine ritim kurmak: küçük adımlar, düzenli görünürlük "
-          f"ve her adımın sonunda kısa bir değerlendirme. Böylece güçlü yanlar daha belirginleşir, gelişime açık taraflar ise "
-          f"zorlanmadan dönüşür.")
+    ipucu_cumleleri = []
+    ipucu_cumleleri.append(_yonlendirme_cumlesi(birinci, rng, ipuclar))
+    if rng.random() < 0.7:
+        ipucu_cumleleri.append(_yonlendirme_cumlesi(ikinci, rng, ipuclar))
+    if rng.random() < 0.5:
+        # Üçüncü bir mikro-öneri; en düşük alandan seç
+        ucuncu = min(vals, key=vals.get)
+        ipucu_cumleleri.append(_yonlendirme_cumlesi(ucuncu, rng, ipuclar))
 
-    if (a + k + g + b) > 0:
-        return f"{p1}\n\n{p2}\n\n{p3}"
+    gelisim = (
+        f"Bu resimde {rng.choice(vary['odak'])}, açık alanı bilinçli paylaşımla büyütmek ve kör alanı "
+        f"istikrarlı geri bildirimle daraltmak {rng.choice(vary['olabilir'])}. "
+        f"{' '.join(ipucu_cumleleri)} "
+        f"Kısa döngülerle yapılan değerlendirmeler, hız yerine ritim kurmayı sağlar; böylece güçlü yanlar belirginleşirken "
+        f"gelişime açık taraflar zorlanmadan dönüşür."
+    )
+
+    if rng.random() < 0.5:
+        kapanis = (
+            f"Zaman içinde bu dört alanın dengesi değiştikçe iletişim sadeleşir ve karar süreçleri netleşir. "
+            f"{ad} için öneri: düzenli görünürlük, merakla dinleme ve küçük pilotlar. "
+            f"Bu üçlü, doğal bir öğrenme hattı oluşturur."
+        )
+        return f"{giris}\n\n{gelisim}\n\n{kapanis}"
     else:
-        return (f"{ad} için yorum üretilemedi. Yine de küçük, düzenli paylaşımlar ve kısa geri bildirim turlarıyla açık alanı "
-                f"artırmak mümkün. Her karar öncesi kısa bir taslak ve sonrasında iki cümlelik değerlendirme, doğal bir ilerleme ritmi sağlar.")
+        return f"{giris}\n\n{gelisim}"
 
 
 
-
-# ================== EXCEL KAYIT (GİZLİ KONUM) ==================
 def kaydet_excel(yapan, test_edilen, puanlar, genel_A, genel_G, alanlar):
     os.makedirs("data", exist_ok=True)
     dosya_yolu = os.path.join("data", "sonuclar.xlsx")
@@ -626,7 +751,7 @@ def kaydet_excel(yapan, test_edilen, puanlar, genel_A, genel_G, alanlar):
 
 
 
-# ================== MAİL ==================
+
 def mail_gonder(eposta, yapan, grafik_path, alanlar, yorum):
     try:
         msg = Message(
@@ -649,14 +774,11 @@ def mail_gonder(eposta, yapan, grafik_path, alanlar, yorum):
     except Exception as e:
         print(f"[HATA] Mail gönderilemedi: {str(e)}")
 
-# ================== ÖNBELLEK KAPAT ==================
 @app.after_request
 def no_cache(response):
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
-    return response
 
-# ================== MAIN ==================
 if __name__ == "__main__":
     app.run(debug=True)
